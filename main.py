@@ -1,0 +1,545 @@
+@namespace
+class SpriteKind:
+    PlayerShot = SpriteKind.create()
+    LifeBar = SpriteKind.create()
+    sprite = SpriteKind.create()
+    Enemy_NPC = SpriteKind.create()
+    NPC = SpriteKind.create()
+def moveSpriteInTime(sprite2: Sprite, x: number, y: number, t: number):
+    global globalX, globalY, dx, dy
+    globalX = x
+    globalY = y
+    dx = x - sprite2.x
+    dy = y - sprite2.y
+    sprite2.set_velocity(dx / t, dy / t)
+def spell_flower():
+    global offset
+    projectile_sprite.set_image(assets.image("""
+        boss_bullet_2
+        """))
+    shoot_bullet_from_sprite(boss, projectile_sprite.image, 270 / MAX, 0 + offset)
+    shoot_bullet_from_sprite(boss, projectile_sprite.image, 270 / MAX, 0 - offset)
+    shoot_bullet_from_sprite(boss, projectile_sprite.image, 270 / MAX, 90 + offset)
+    shoot_bullet_from_sprite(boss, projectile_sprite.image, 270 / MAX, 90 - offset)
+    shoot_bullet_from_sprite(boss, projectile_sprite.image, 270 / MAX, 180 + offset)
+    shoot_bullet_from_sprite(boss, projectile_sprite.image, 270 / MAX, 180 - offset)
+    shoot_bullet_from_sprite(boss, projectile_sprite.image, 270 / MAX, 270 + offset)
+    shoot_bullet_from_sprite(boss, projectile_sprite.image, 270 / MAX, 270 - offset)
+    offset += 9
+    projectile_sprite.set_image(assets.image("""
+        boss_bullet
+        """))
+def spell_star():
+    global star_sprites, bullet_spin, angle_offset, offset
+    star_sprites = [assets.image("""
+            star_bullet_1
+            """),
+        assets.image("""
+            star_bullet_2
+            """),
+        assets.image("""
+            star_bullet_3
+            """),
+        assets.image("""
+            star_bullet_4
+            """)]
+    bullet_spin = True
+    for index in range(5):
+        projectile_sprite.set_image(star_sprites[index - 1])
+        shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, 90 * (index + 1) - offset)
+    angle_offset = 0.05
+    offset += 16
+    projectile_sprite.set_image(assets.image("""
+        boss_bullet
+        """))
+
+def on_b_pressed():
+    global small_hitbox, player_sprite
+    if started:
+        hitbox.set_image(assets.image("""
+            player_hitbox
+            """))
+        hitbox.z = 1
+        small_hitbox = True
+        player_sprite = sprites.create(assets.image("""
+            Player
+            """), SpriteKind.sprite)
+        controller.move_sprite(hitbox, 50, 50)
+controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
+
+def spell_scarlet_gensokyo():
+    global index22
+    projectile_sprite.set_image(assets.image("""
+        boss_bullet_4
+        """))
+    while index22 <= MAX:
+        shoot_bullet_from_sprite(boss,
+            projectile_sprite.image,
+            60,
+            360 / MAX * index22 + offset)
+        shoot_bullet_from_sprite(boss,
+            projectile_sprite.image,
+            100,
+            360 / MAX * (index22 + 0.5) + offset)
+        index22 += 1
+    projectile_sprite.set_image(assets.image("""
+        boss_bullet
+        """))
+def moveSpriteRandom(sprite32: Sprite, yLowerBound: number, outerBound: number, v: number):
+    moveSprite(sprite32,
+        randint(outerBound, scene.screen_width() - outerBound),
+        randint(outerBound, yLowerBound),
+        v)
+
+def on_a_pressed():
+    if started:
+        shoot_bullet_from_sprite(hitbox, hitbox.image, 200, -90)
+controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
+
+def spell_star_corridor():
+    global scatter, offset
+    projectile_sprite.set_image(assets.image("""
+        star_bullet_2
+        """))
+    scatter = 10
+    shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, 80 + offset)
+    shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, 100 + offset)
+    offset += randint(-5, 5)
+
+def on_on_overlap(sprite4, otherSprite2):
+    global iframe
+    if not (iframe) and not (debug_mode):
+        info.change_life_by(-1)
+        scene.camera_shake(3, 200)
+        music.play_tone(139, music.beat(BeatFraction.EIGHTH))
+        otherSprite2.destroy()
+        iframe = True
+        for index2 in range(5):
+            if small_hitbox:
+                player_sprite.set_image(assets.image("""
+                    Player_Iframe
+                    """))
+                pause(50)
+                player_sprite.set_image(assets.image("""
+                    Player
+                    """))
+                pause(50)
+            else:
+                hitbox.set_image(assets.image("""
+                    Player_Iframe
+                    """))
+                pause(50)
+                hitbox.set_image(assets.image("""
+                    Player
+                    """))
+                pause(50)
+        iframe = False
+sprites.on_overlap(SpriteKind.player, SpriteKind.projectile, on_on_overlap)
+
+def shoot_bullet_from_sprite(source_sprite: Sprite, projectile_image: Image, speed: number, angle: number):
+    global projectile
+    projectile = sprites.create_projectile_from_sprite(assets.image("""
+            star_bullet_3
+            """),
+        source_sprite,
+        speed * Math.cos(angle / 57.3),
+        speed * Math.sin(angle / 57.3))
+    projectile.set_flag(SpriteFlag.AUTO_DESTROY, True)
+    if source_sprite.kind() == SpriteKind.player:
+        projectile.set_kind(SpriteKind.PlayerShot)
+        projectile.set_image(assets.image("""
+            player_bullet
+            """))
+    else:
+        projectile.set_image(projectile_image)
+
+def on_on_overlap2(sprite3, otherSprite):
+    global talked
+    if otherSprite == npc1 and not (talked):
+        game.show_long_text("Hola", DialogLayout.BOTTOM)
+        game.show_long_text("Como estas", DialogLayout.BOTTOM)
+        game.show_long_text("Adios", DialogLayout.BOTTOM)
+        game.show_long_text("...", DialogLayout.BOTTOM)
+        talked = True
+    
+    def on_after():
+        global talked
+        talked = False
+    timer.after(2000, on_after)
+    
+sprites.on_overlap(SpriteKind.player, SpriteKind.NPC, on_on_overlap2)
+
+def set_NPC_location(NPC2: Sprite, location: tiles.Location):
+    tiles.place_on_tile(NPC2, location)
+    if NPC2.kind() == SpriteKind.Enemy_NPC:
+        NPC2.say_text("!")
+    elif NPC2.kind() == SpriteKind.NPC:
+        NPC2.say_text(":)")
+def spell_bullet_mirror():
+    global warp_around, offset
+    warp_around = True
+    projectile_sprite.set_image(assets.image("""
+        snowflake
+        """))
+    for index32 in range(3):
+        shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, offset + index32 * 30)
+    offset += 48
+def start_game():
+    global bossCanMove, ready, started, enemy1, enemy2, npc1
+    lifeBar.set_flag(SpriteFlag.INVISIBLE, True)
+    boss.set_position(-16, -16)
+    bossCanMove = False
+    ready = False
+    started = False
+    sprites.destroy_all_sprites_of_kind(SpriteKind.projectile)
+    tiles.place_on_tile(hitbox, player_location)
+    hitbox.set_image(assets.image("""
+        Player
+        """))
+    scene.camera_follow_sprite(hitbox)
+    controller.move_sprite(hitbox)
+    tiles.set_current_tilemap(tilemap("""
+        map1
+        """))
+    enemy1 = sprites.create(assets.image("""
+        enemy1
+        """), SpriteKind.Enemy_NPC)
+    enemy2 = sprites.create(assets.image("""
+        enemy2
+        """), SpriteKind.Enemy_NPC)
+    npc1 = sprites.create(assets.image("""
+        npc1
+        """), SpriteKind.NPC)
+    set_NPC_location(enemy1, tiles.get_tile_location(3, 3))
+    set_NPC_location(enemy2, tiles.get_tile_location(12, 3))
+    set_NPC_location(npc1, tiles.get_tile_location(3, 8))
+def start_battle(enemy: Sprite):
+    global boss_life, player_location, life_bar_progress, boss_progress, boss_num
+    lifeBar.set_flag(SpriteFlag.INVISIBLE, False)
+    boss_life = 48
+    player_location = hitbox.tilemap_location()
+    life_bar_progress = 0
+    boss_progress = 0
+    if enemy == enemy1:
+        boss_num = 1
+        scene.set_background_image(assets.image("""
+            forest
+            """))
+        boss.set_image(assets.image("""
+            enemy1
+            """))
+    elif enemy == enemy2:
+        boss_num = 2
+        scene.set_background_image(assets.image("""
+            moon
+            """))
+        boss.set_image(assets.image("""
+            enemy2
+            """))
+    tiles.place_on_tile(boss, tiles.get_tile_location(0, 0))
+    scene.center_camera_at(0, 0)
+    tiles.set_current_tilemap(tilemap("""
+        level2
+        """))
+    hitbox.set_position(75, 100)
+    sprites.destroy_all_sprites_of_kind(SpriteKind.Enemy_NPC)
+    sprites.destroy_all_sprites_of_kind(SpriteKind.NPC)
+    preSetBossPosition(80, 30)
+# <-- CORRECCIÓN CLAVE
+# La función set_projectile_speed y el timer ya no son necesarios
+# ya que la velocidad se establece en el momento del disparo.
+# timer.after(300, on_after)
+def init():
+    global iframe, small_hitbox, hitbox, boss_life, boss, lifebar_pic, lifeBar, offset, MAX, bossCanMove, warp_around, global_speed, angle2, bullet_spin, talked, boss_num, player_location
+    iframe = False
+    small_hitbox = False
+    hitbox = sprites.create(assets.image("""
+        invisible
+        """), SpriteKind.player)
+    boss_life = 48
+    boss = sprites.create(assets.image("""
+        invisible
+        """), SpriteKind.enemy)
+    lifebar_pic = image.create(96, 5)
+    lifeBar = sprites.create(lifebar_pic, SpriteKind.LifeBar)
+    offset = 0
+    MAX = 10
+    bossCanMove = True
+    hitbox.set_position(80, 105)
+    hitbox.set_flag(SpriteFlag.STAY_IN_SCREEN, True)
+    lifeBar.set_position(80, 5)
+    lifeBar.set_flag(SpriteFlag.GHOST, True)
+    warp_around = False
+    global_speed = 0
+    angle2 = 0
+    bullet_spin = False
+    talked = False
+    boss_num = 0
+    player_location = tiles.get_tile_location(0, 0)
+def framedMenu():
+    global myMenu
+    myMenu = miniMenu.create_menu(miniMenu.create_menu_item("Debug"),
+        miniMenu.create_menu_item("Fácil"),
+        miniMenu.create_menu_item("Normal"),
+        miniMenu.create_menu_item("Difícil"),
+        miniMenu.create_menu_item("Imposible"))
+    myMenu.set_menu_style_property(miniMenu.MenuStyleProperty.WIDTH, 65)
+    myMenu.set_menu_style_property(miniMenu.MenuStyleProperty.HEIGHT, 100)
+    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT_AND_SELECTED,
+        miniMenu.StyleProperty.BORDER,
+        miniMenu.create_border_box(4, 0, 0, 0))
+    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT_AND_SELECTED,
+        miniMenu.StyleProperty.MARGIN,
+        miniMenu.create_border_box(0, 0, 0, 2))
+    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT,
+        miniMenu.StyleProperty.BORDER_COLOR,
+        11)
+    myMenu.set_style_property(miniMenu.StyleKind.SELECTED,
+        miniMenu.StyleProperty.BORDER_COLOR,
+        4)
+    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT_AND_SELECTED,
+        miniMenu.StyleProperty.BACKGROUND,
+        12)
+    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT,
+        miniMenu.StyleProperty.FOREGROUND,
+        11)
+    myMenu.set_style_property(miniMenu.StyleKind.SELECTED,
+        miniMenu.StyleProperty.FOREGROUND,
+        4)
+    myMenu.top = 28
+    myMenu.right = 160
+    
+    def on_button_pressed(selection, selectedIndex):
+        myMenu.close()
+        info.set_score(0)
+        set_difficulty(selectedIndex)
+        start_game()
+    myMenu.on_button_pressed(controller.A, on_button_pressed)
+    
+def preSetBossPosition(x2: number, y2: number):
+    global started, ready, offset
+    started = False
+    ready = False
+    offset = 0
+    moveSpriteInTime(boss, x2, y2, 1)
+
+def on_on_overlap3(sprite6, otherSprite4):
+    start_battle(otherSprite4)
+sprites.on_overlap(SpriteKind.player, SpriteKind.Enemy_NPC, on_on_overlap3)
+
+def on_b_released():
+    global small_hitbox
+    if started:
+        controller.move_sprite(hitbox)
+        small_hitbox = False
+        hitbox.set_image(assets.image("""
+            Player
+            """))
+        sprites.destroy(player_sprite)
+controller.B.on_event(ControllerButtonEvent.RELEASED, on_b_released)
+
+def enemy_shoot_aiming_player(sprite5: Sprite, projectile_image2: Image, speed22: number, spread: number):
+    shoot_bullet_from_sprite(sprite5,
+        projectile_image2,
+        speed22,
+        Math.atan2(hitbox.y - sprite5.y, hitbox.x - sprite5.x) * 57.3 + randint(0 - spread, spread))
+def spell_aim_trail():
+    for index3 in range(11):
+        enemy_shoot_aiming_player(boss, projectile_sprite.image, randint(20, 75), 10)
+    projectile_sprite.set_image(assets.image("""
+        boss_bullet_3
+        """))
+    enemy_shoot_aiming_player(boss, projectile_sprite.image, 90, 5)
+    projectile_sprite.set_image(assets.image("""
+        boss_bullet
+        """))
+def moveSpriteRandomFixedTime(sprite52: Sprite, yLowerBound2: number, outerBound2: number, u: number):
+    moveSpriteInTime(sprite52,
+        randint(outerBound2, scene.screen_width() - outerBound2),
+        randint(outerBound2, yLowerBound2),
+        u)
+def moveSprite(sprite62: Sprite, x3: number, y3: number, w: number):
+    global globalX, globalY, dx, dy, speed32
+    globalX = x3
+    globalY = y3
+    dx = x3 - sprite62.x
+    dy = y3 - sprite62.y
+    speed32 = Math.sqrt(dx * dx + dy * dy)
+    if speed32 != 0:
+        sprite62.set_velocity(dx / speed32 * w, dy / speed32 * w)
+def set_difficulty(difficulty: number):
+    global debug_mode, projectile_sprite
+    if difficulty == 0:
+        debug_mode = True
+        info.set_life(20)
+    else:
+        info.set_life(20 / difficulty)
+    projectile_sprite = sprites.create(assets.image("""
+            boss_bullet
+            """),
+        SpriteKind.projectile)
+    projectile_sprite.x = -10
+
+def on_on_overlap4(sprite22, otherSprite3):
+    global boss_life
+    if started:
+        info.change_score_by(20)
+        boss_life += -2
+        music.play_tone(208, music.beat(BeatFraction.EIGHTH))
+        lifebar_pic.fill_rect(boss_life * 2, 0, 96 - boss_life * 2, 5, 15)
+        lifeBar.set_image(lifebar_pic)
+        if boss_life <= 0:
+            start_game()
+        elif boss_life % 12 == 0:
+            preSetBossPosition(80, 30)
+    otherSprite3.destroy()
+sprites.on_overlap(SpriteKind.enemy, SpriteKind.PlayerShot, on_on_overlap4)
+
+speed3 = 0
+speed32 = 0
+myMenu: miniMenu.MenuSprite = None
+angle2 = 0
+global_speed = 0
+lifebar_pic: Image = None
+boss_num = 0
+boss_progress = 0
+life_bar_progress = 0
+boss_life = 0
+enemy2: Sprite = None
+enemy1: Sprite = None
+player_location: tiles.Location = None
+ready = False
+bossCanMove = False
+lifeBar: Sprite = None
+warp_around = False
+talked = False
+npc1: Sprite = None
+projectile: Sprite = None
+debug_mode = False
+iframe = False
+scatter = 0
+index22 = 0
+player_sprite: Sprite = None
+small_hitbox = False
+hitbox: Sprite = None
+started = False
+angle_offset = 0
+bullet_spin = False
+star_sprites: List[Image] = []
+offset = 0
+MAX = 0
+boss: Sprite = None
+projectile_sprite: Sprite = None
+dy = 0
+dx = 0
+globalY = 0
+globalX = 0
+scene.set_background_image(assets.image("""
+    menu_screen
+    """))
+framedMenu()
+music.set_volume(20)
+init()
+
+def on_on_update():
+    global boss_progress, warp_around, bullet_spin, bossCanMove, MAX, ready, angle2, speed3
+    if abs(boss.x - globalX) + abs(boss.y - globalY) <= 2:
+        boss.set_velocity(0, 0)
+        if not (ready):
+            sprites.destroy_all_sprites_of_kind(SpriteKind.projectile)
+            boss_progress += 1
+            warp_around = False
+            bullet_spin = False
+            if boss_progress == 1:
+                bossCanMove = False
+            elif boss_progress == 2:
+                bossCanMove = True
+                MAX = 8
+            else:
+                bossCanMove = False
+        ready = True
+    if small_hitbox:
+        player_sprite.set_position(hitbox.x, hitbox.y)
+    for q in sprites.all_of_kind(SpriteKind.projectile):
+        if warp_around:
+            if q.x < 5:
+                q.x = 155
+            elif q.x > 155:
+                q.x = 5
+        if bullet_spin:
+            angle2 = Math.atan2(q.vy, q.vx)
+            angle2 += angle_offset
+            speed3 = Math.sqrt(q.vx * q.vx + q.vy * q.vy)
+            speed3 += 2
+            q.vx = speed3 * Math.cos(angle2)
+            q.vy = speed3 * Math.sin(angle2)
+game.on_update(on_on_update)
+
+def on_update_interval():
+    if started and bossCanMove:
+        moveSpriteRandom(boss, 40, 8, 60)
+game.on_update_interval(2500, on_update_interval)
+
+def on_update_interval2():
+    if boss_num == 2:
+        if boss_progress == 2:
+            spell_aim_trail()
+game.on_update_interval(1000, on_update_interval2)
+
+def on_update_interval3():
+    if started:
+        if boss_num == 1:
+            if boss_progress == 2:
+                spell_scarlet_gensokyo()
+game.on_update_interval(1000, on_update_interval3)
+
+def on_update_interval4():
+    if started:
+        if boss_num == 1:
+            if boss_progress == 1:
+                spell_flower()
+            elif False:
+                pass
+            else:
+                pass
+game.on_update_interval(400, on_update_interval4)
+
+def on_update_interval5():
+    if started:
+        if boss_num == 2:
+            if boss_progress == 1:
+                spell_star()
+            elif boss_progress == 3:
+                spell_star_corridor()
+            else:
+                pass
+        else:
+            pass
+game.on_update_interval(150, on_update_interval5)
+
+def on_update_interval6():
+    global life_bar_progress, started
+    if ready and not (started):
+        if life_bar_progress < 4:
+            lifebar_pic.fill_rect(24 * life_bar_progress,
+                0,
+                24,
+                5,
+                14 - life_bar_progress % 2 * 6)
+            lifebar_pic.fill_rect(24 * life_bar_progress,
+                1,
+                24,
+                3,
+                life_bar_progress % 2 * 5 + 4)
+            lifeBar.set_image(lifebar_pic)
+            life_bar_progress += 1
+        else:
+            started = True
+game.on_update_interval(100, on_update_interval6)
+
+def on_update_interval7():
+    if started:
+        if boss_num == 1:
+            if boss_progress == 4:
+                spell_bullet_mirror()
+game.on_update_interval(300, on_update_interval7)
