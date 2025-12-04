@@ -41,15 +41,6 @@ function spell_star () {
     offset += 16
     projectile_sprite.setImage(assets.image`boss_bullet`)
 }
-controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (started) {
-        hitbox.setImage(assets.image`player_hitbox`)
-        hitbox.z = 1
-        small_hitbox = true
-        player_sprite = sprites.create(assets.image`Player`, SpriteKind.sprite)
-        controller.moveSprite(hitbox, 50, 50)
-    }
-})
 function spell_scarlet_gensokyo () {
     projectile_sprite.setImage(assets.image`boss_bullet_4`)
     while (index22 <= MAX) {
@@ -62,11 +53,6 @@ function spell_scarlet_gensokyo () {
 function moveSpriteRandom (sprite32: Sprite, yLowerBound: number, outerBound: number, v: number) {
     moveSprite(sprite32, randint(outerBound, scene.screenWidth() - outerBound), randint(outerBound, yLowerBound), v)
 }
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (started) {
-        shoot_bullet_from_sprite(hitbox, hitbox.image, 200, -90)
-    }
-})
 function spell_star_corridor () {
     projectile_sprite.setImage(assets.image`star_bullet_2`)
     scatter = 10
@@ -118,6 +104,20 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.NPC, function (sprite3, otherSpr
     timer.after(2000, function () {
         talked = false
     })
+})
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (started) {
+        shoot_bullet_from_sprite(hitbox, hitbox.image, 200, -90)
+    }
+})
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (started) {
+        hitbox.setImage(assets.image`player_hitbox`)
+        hitbox.z = 1
+        small_hitbox = true
+        player_sprite = sprites.create(assets.image`Player`, SpriteKind.sprite)
+        controller.moveSprite(hitbox, 50, 50)
+    }
 })
 function set_NPC_location (NPC2: Sprite, location: tiles.Location) {
     tiles.placeOnTile(NPC2, location)
@@ -249,14 +249,6 @@ function preSetBossPosition (x2: number, y2: number) {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_NPC, function (sprite6, otherSprite4) {
     start_battle(otherSprite4)
 })
-controller.B.onEvent(ControllerButtonEvent.Released, function () {
-    if (started) {
-        controller.moveSprite(hitbox)
-        small_hitbox = false
-        hitbox.setImage(assets.image`Player`)
-        sprites.destroy(player_sprite)
-    }
-})
 function enemy_shoot_aiming_player (sprite5: Sprite, projectile_image2: Image, speed22: number, spread: number) {
     shoot_bullet_from_sprite(sprite5, projectile_image2, speed22, Math.atan2(hitbox.y - sprite5.y, hitbox.x - sprite5.x) * 57.3 + randint(0 - spread, spread))
 }
@@ -281,6 +273,14 @@ function moveSprite (sprite62: Sprite, x3: number, y3: number, w: number) {
         sprite62.setVelocity(dx / speed32 * w, dy / speed32 * w)
     }
 }
+controller.B.onEvent(ControllerButtonEvent.Released, function () {
+    if (started) {
+        controller.moveSprite(hitbox)
+        small_hitbox = false
+        hitbox.setImage(assets.image`Player`)
+        sprites.destroy(player_sprite)
+    }
+})
 function set_difficulty (difficulty: number) {
     if (difficulty == 0) {
         debug_mode = true
@@ -323,17 +323,17 @@ let ready = false
 let bossCanMove = false
 let lifeBar: Sprite = null
 let warp_around = false
+let started = false
 let talked = false
 let npc1: Sprite = null
 let projectile: Sprite = null
+let hitbox: Sprite = null
+let player_sprite: Sprite = null
+let small_hitbox = false
 let debug_mode = false
 let iframe = false
 let scatter = 0
 let index22 = 0
-let player_sprite: Sprite = null
-let small_hitbox = false
-let hitbox: Sprite = null
-let started = false
 let angle_offset = 0
 let bullet_spin = false
 let star_sprites: Image[] = []
