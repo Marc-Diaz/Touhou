@@ -14,11 +14,6 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "Player_Iframe"
     },
-    "image2": {
-        "data": "hwQQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAIAAAAAAAASIQAAAAAAIBERAgAAAAAgERECAAAAAAASIQAAAAAAACACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-        "mimeType": "image/x-mkcd-f4",
-        "displayName": "player_hitbox"
-    },
     "image4": {
         "data": "hwQQABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAREQAAAAAAEImYAQAAAABhiIgWAAAAEImIiIgBAAAQiIiIiAEAABCIiIiIAQAAEImIiJgBAAAAYYiIFgAAAAAQiZgBAAAAAAAREQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
         "mimeType": "image/x-mkcd-f4",
@@ -163,6 +158,11 @@
         "data": "hwQQABAAAAAAABAREQEAAAAQEYiIEQEAABGIiIiIEQAQgYiIiIgYARCIiIiIiIgBEYiIiIiIiBGBiIiIiIiIGIGIiIiIiIgYgYiIiIiIiBiBiIiIiIiIGBGIiIiIiIgREIiIiIiIiAEQgYiIiIgYAQARiIiIiBEAABARiIgRAQAAABAREQEAAA==",
         "mimeType": "image/x-mkcd-f4",
         "displayName": "boss_bullet_4"
+    },
+    "image2": {
+        "data": "hwQGAAYAAAAAIgAAIBECABIRIQASESEAIBECAAAiAAA=",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "player_hitbox"
     },
     "*": {
         "mimeType": "image/x-mkcd-f4",

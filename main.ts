@@ -147,6 +147,14 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.NPC, function (sprite3, otherSpr
         talked = false
     })
 })
+function spell_blue_sun () {
+    projectile_sprite.setImage(assets.image`boss_bullet_4`)
+    for (let index = 0; index <= 8; index++) {
+        shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, 45 * index + 22.5)
+        shoot_bullet_from_sprite(boss, projectile_sprite.image, 100, 45 * index)
+    }
+    projectile_sprite.setImage(assets.image`boss_bullet`)
+}
 function spell_star_vortex () {
     star_sprites = [
     assets.image`star_bullet_1`,
@@ -384,6 +392,14 @@ function preSetBossPosition (x22: number, y2: number) {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_NPC, function (sprite6, otherSprite4) {
     start_battle(otherSprite4)
 })
+controller.B.onEvent(ControllerButtonEvent.Released, function () {
+    if (started) {
+        hitbox.setImage(assets.image`Player`)
+        small_hitbox = false
+        controller.moveSprite(hitbox)
+        sprites.destroy(player_sprite)
+    }
+})
 function enemy_shoot_aiming_player (sprite5: Sprite, projectile_image2: Image, speed22: number, spread: number) {
     shoot_bullet_from_sprite(sprite5, projectile_image2, speed22, Math.atan2(hitbox.y - sprite5.y, hitbox.x - sprite5.x) * 57.3 + randint(0 - spread, spread))
 }
@@ -397,15 +413,6 @@ function spell_aim_trail () {
 }
 function moveSpriteRandomFixedTime (sprite52: Sprite, yLowerBound2: number, outerBound2: number, u: number) {
     moveSpriteInTime(sprite52, randint(outerBound2, scene.screenWidth() - outerBound2), randint(outerBound2, yLowerBound2), u)
-}
-function spell_red_sun () {
-    projectile_sprite.setImage(assets.image`boss_bullet_4`)
-    while (index222 <= MAX) {
-        shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, 360 / MAX * index222 + offset)
-        shoot_bullet_from_sprite(boss, projectile_sprite.image, 100, 360 / MAX * (index222 + 0.5) + offset)
-        index222 += 1
-    }
-    projectile_sprite.setImage(assets.image`boss_bullet`)
 }
 function moveSprite (sprite62: Sprite, x3: number, y3: number, w: number) {
     globalX = x3
@@ -465,7 +472,6 @@ sprites.onOverlap(SpriteKind.Enemy, SpriteKind.PlayerShot, function (sprite22, o
     otherSprite3.destroy()
 })
 let speed32 = 0
-let index222 = 0
 let speed3 = 0
 let angle_offset = 0
 let myMenu: miniMenu.MenuSprite = null
@@ -580,7 +586,7 @@ game.onUpdateInterval(1000, function () {
             }
         } else if (boss_num == 2) {
             if (boss_progress == 2) {
-                spell_red_sun()
+                spell_blue_sun()
             }
         }
     }
@@ -594,7 +600,9 @@ game.onUpdateInterval(400, function () {
                 spell_wind()
             }
         } else if (boss_num == 3) {
-        	
+            if (boss_progress == 4) {
+                spell_starry_night()
+            }
         }
     }
 })
