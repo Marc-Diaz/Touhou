@@ -31,17 +31,35 @@ def spell_flower():
         boss_bullet
         """))
 
+def on_up_pressed():
+    if not (in_battle) and not (in_menu):
+        hitbox.set_image(assets.image("""
+            reimu_2
+            """))
+        scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
+        scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
+controller.up.on_event(ControllerButtonEvent.PRESSED, on_up_pressed)
+
 def on_b_pressed():
     global small_hitbox, player_sprite
     if started:
         hitbox.set_image(assets.image("""
             player_hitbox
             """))
+        scaling.scale_to_pixels(hitbox, 8, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
         hitbox.z = 1
         small_hitbox = True
         player_sprite = sprites.create(assets.image("""
-            Player
+            reimu_2
             """), SpriteKind.sprite)
+        scaling.scale_to_pixels(player_sprite,
+            18,
+            ScaleDirection.HORIZONTALLY,
+            ScaleAnchor.MIDDLE)
+        scaling.scale_to_pixels(player_sprite,
+            24,
+            ScaleDirection.VERTICALLY,
+            ScaleAnchor.MIDDLE)
         controller.move_sprite(hitbox, 50, 50)
 controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
 
@@ -127,7 +145,7 @@ def on_on_overlap(sprite4, otherSprite2):
                     """))
                 pause(50)
                 player_sprite.set_image(assets.image("""
-                    Player
+                    Player_up
                     """))
                 pause(50)
             else:
@@ -136,7 +154,7 @@ def on_on_overlap(sprite4, otherSprite2):
                     """))
                 pause(50)
                 hitbox.set_image(assets.image("""
-                    Player
+                    Player_up
                     """))
                 pause(50)
         iframe = False
@@ -191,6 +209,15 @@ def on_on_overlap2(sprite3, otherSprite):
     timer.after(2000, on_after2)
     
 sprites.on_overlap(SpriteKind.player, SpriteKind.NPC, on_on_overlap2)
+
+def on_left_pressed():
+    if not (in_battle) and not (in_menu):
+        hitbox.set_image(assets.image("""
+            reimu_3
+            """))
+        scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
+        scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
+controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
 
 def spell_blue_sun():
     projectile_sprite.set_image(assets.image("""
@@ -297,7 +324,9 @@ def spell_wind():
         projectile_spawner.set_position(randint(0, scene.screen_width()), 5)
     offset += randint(-5, 5)
 def start_game():
-    global boss_can_move, ready, started, enemy1, enemy2, enemy3, npc1
+    global in_menu, in_battle, boss_can_move, ready, started, enemy1, enemy2, enemy3, npc1
+    in_menu = False
+    in_battle = False
     lifeBar.set_flag(SpriteFlag.INVISIBLE, True)
     boss.set_position(-16, -16)
     boss_can_move = False
@@ -306,31 +335,47 @@ def start_game():
     sprites.destroy_all_sprites_of_kind(SpriteKind.projectile)
     tiles.place_on_tile(hitbox, player_location)
     hitbox.set_image(assets.image("""
-        Player
+        reimu_2
         """))
+    scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
+    scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
     scene.camera_follow_sprite(hitbox)
     controller.move_sprite(hitbox)
     tiles.set_current_tilemap(tilemap("""
         map1
         """))
     enemy1 = sprites.create(assets.image("""
-        enemy1
+        sakuya
         """), SpriteKind.Enemy_NPC)
     enemy2 = sprites.create(assets.image("""
-        enemy2
+        cirno
         """), SpriteKind.Enemy_NPC)
     enemy3 = sprites.create(assets.image("""
-        enemy3
+        remilia
         """), SpriteKind.Enemy_NPC)
     npc1 = sprites.create(assets.image("""
         npc1
         """), SpriteKind.NPC)
+    scaling.scale_to_pixels(enemy1, 24, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
+    scaling.scale_to_pixels(enemy2, 24, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
+    scaling.scale_to_pixels(enemy3, 24, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
     set_NPC_location(enemy1, tiles.get_tile_location(3, 3))
     set_NPC_location(enemy2, tiles.get_tile_location(12, 3))
     set_NPC_location(enemy3, tiles.get_tile_location(12, 8))
     set_NPC_location(npc1, tiles.get_tile_location(3, 8))
+
+def on_right_pressed():
+    if not (in_battle) and not (in_menu):
+        hitbox.set_image(assets.image("""
+            reimu_4
+            """))
+        scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
+        scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
+controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
+
 def start_battle(enemy: Sprite):
-    global boss_life, player_location, life_bar_progress, boss_progress, boss_num
+    global in_battle, boss_life, player_location, life_bar_progress, boss_progress, boss_num
+    in_battle = True
     lifeBar.set_flag(SpriteFlag.INVISIBLE, False)
     boss_life = 48
     player_location = hitbox.tilemap_location()
@@ -366,6 +411,9 @@ def start_battle(enemy: Sprite):
     tiles.set_current_tilemap(tilemap("""
         level2
         """))
+    hitbox.set_image(assets.image("""
+        reimu_2
+        """))
     hitbox.set_position(75, 100)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Enemy_NPC)
     sprites.destroy_all_sprites_of_kind(SpriteKind.NPC)
@@ -375,7 +423,7 @@ def start_battle(enemy: Sprite):
 # ya que la velocidad se establece en el momento del disparo.
 # timer.after(300, on_after)
 def init():
-    global iframe, small_hitbox, hitbox, boss_life, boss, lifebar_pic, lifeBar, offset, MAX, boss_can_move, warp_around, global_speed, angle2, bullet_spin, talked, boss_num, player_location, projectile_spawner, change_offset, fragmentation, sin_wave, amplitude, frecuency
+    global iframe, small_hitbox, hitbox, boss_life, boss, lifebar_pic, lifeBar, offset, MAX, boss_can_move, warp_around, global_speed, angle2, bullet_spin, talked, boss_num, player_location, projectile_spawner, change_offset, fragmentation, sin_wave, amplitude, frecuency, in_menu, in_battle
     iframe = False
     small_hitbox = False
     hitbox = sprites.create(assets.image("""
@@ -401,23 +449,8 @@ def init():
     talked = False
     boss_num = 0
     player_location = tiles.get_tile_location(0, 0)
-    projectile_spawner = sprites.create(img("""
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
-            . . . . . . . . . . . . . . . .
+    projectile_spawner = sprites.create(assets.image("""
+            invisible
             """),
         SpriteKind.Projectile_spawner)
     change_offset = True
@@ -425,6 +458,8 @@ def init():
     sin_wave = False
     amplitude = 0
     frecuency = 0
+    in_menu = True
+    in_battle = False
 def boss_movement():
     global boss_movement2, boss_can_move
     boss_movement2 = [[False, False, False, False],
@@ -471,6 +506,16 @@ def framedMenu():
         start_game()
     myMenu.on_button_pressed(controller.A, on_button_pressed)
     
+
+def on_down_pressed():
+    if not (in_battle) and not (in_menu):
+        hitbox.set_image(assets.image("""
+            reimu_1
+            """))
+        scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
+        scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
+controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
+
 def set_bullet_spin(a_offset: number, speed2: number):
     global bullet_spin, angle_offset, speed3
     bullet_spin = True
@@ -491,8 +536,10 @@ def on_b_released():
     global small_hitbox
     if started:
         hitbox.set_image(assets.image("""
-            Player
+            reimu_2
             """))
+        scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
+        scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
         small_hitbox = False
         controller.move_sprite(hitbox)
         sprites.destroy(player_sprite)
@@ -628,8 +675,10 @@ change_offset = False
 projectile_spawner: Sprite = None
 player_sprite: Sprite = None
 small_hitbox = False
-hitbox: Sprite = None
 started = False
+hitbox: Sprite = None
+in_menu = False
+in_battle = False
 offset = 0
 MAX = 0
 boss: Sprite = None

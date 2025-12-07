@@ -28,7 +28,7 @@ function spell_flower () {
 }
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
-        hitbox.setImage(assets.image`reimu_2`)
+        hitbox.setImage(assets.image`Player_up`)
         scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
         scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
     }
@@ -159,7 +159,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.NPC, function (sprite3, otherSpr
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
-        hitbox.setImage(assets.image`reimu_3`)
+        hitbox.setImage(assets.image`player_left`)
         scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
         scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
     }
@@ -252,8 +252,6 @@ function start_game () {
     sprites.destroyAllSpritesOfKind(SpriteKind.Projectile)
     tiles.placeOnTile(hitbox, player_location)
     hitbox.setImage(assets.image`reimu_2`)
-    scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
-    scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
     scene.cameraFollowSprite(hitbox)
     controller.moveSprite(hitbox)
     tiles.setCurrentTilemap(tilemap`map1`)
@@ -261,9 +259,6 @@ function start_game () {
     enemy2 = sprites.create(assets.image`cirno`, SpriteKind.Enemy_NPC)
     enemy3 = sprites.create(assets.image`remilia`, SpriteKind.Enemy_NPC)
     npc1 = sprites.create(assets.image`npc1`, SpriteKind.NPC)
-    scaling.scaleToPixels(enemy1, 24, ScaleDirection.Uniformly, ScaleAnchor.Middle)
-    scaling.scaleToPixels(enemy2, 24, ScaleDirection.Uniformly, ScaleAnchor.Middle)
-    scaling.scaleToPixels(enemy3, 24, ScaleDirection.Uniformly, ScaleAnchor.Middle)
     set_NPC_location(enemy1, tiles.getTileLocation(3, 3))
     set_NPC_location(enemy2, tiles.getTileLocation(12, 3))
     set_NPC_location(enemy3, tiles.getTileLocation(12, 8))
@@ -271,7 +266,7 @@ function start_game () {
 }
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
-        hitbox.setImage(assets.image`reimu_4`)
+        hitbox.setImage(assets.image`Player_down`)
         scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
         scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
     }
@@ -296,11 +291,10 @@ function start_battle (enemy: Sprite) {
         scene.setBackgroundImage(assets.image`moon`)
         boss.setImage(assets.image`remilia`)
     }
-    scaling.scaleToPixels(boss, 24, ScaleDirection.Uniformly, ScaleAnchor.Middle)
     tiles.placeOnTile(boss, tiles.getTileLocation(0, 0))
     scene.centerCameraAt(0, 0)
     tiles.setCurrentTilemap(tilemap`level2`)
-    hitbox.setImage(assets.image`reimu_2`)
+    hitbox.setImage(assets.image`Player_up`)
     hitbox.setPosition(75, 100)
     sprites.destroyAllSpritesOfKind(SpriteKind.Enemy_NPC)
     sprites.destroyAllSpritesOfKind(SpriteKind.NPC)
@@ -398,7 +392,7 @@ function framedMenu () {
 }
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
-        hitbox.setImage(assets.image`reimu_1`)
+        hitbox.setImage(assets.image`Player_right`)
         scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
         scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
     }
@@ -419,7 +413,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_NPC, function (sprite6, ot
 })
 controller.B.onEvent(ControllerButtonEvent.Released, function () {
     if (started) {
-        hitbox.setImage(assets.image`reimu_2`)
+        hitbox.setImage(assets.image`Player_up`)
         scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
         scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
         small_hitbox = false
