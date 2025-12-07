@@ -26,12 +26,22 @@ function spell_flower () {
     offset += 9
     projectile_sprite.setImage(assets.image`boss_bullet`)
 }
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (!(in_battle) && !(in_menu)) {
+        hitbox.setImage(assets.image`reimu_2`)
+        scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
+        scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
+    }
+})
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     if (started) {
         hitbox.setImage(assets.image`player_hitbox`)
+        scaling.scaleToPixels(hitbox, 8, ScaleDirection.Uniformly, ScaleAnchor.Middle)
         hitbox.z = 1
         small_hitbox = true
-        player_sprite = sprites.create(assets.image`Player`, SpriteKind.sprite)
+        player_sprite = sprites.create(assets.image`reimu_2`, SpriteKind.sprite)
+        scaling.scaleToPixels(player_sprite, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
+        scaling.scaleToPixels(player_sprite, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
         controller.moveSprite(hitbox, 50, 50)
     }
 })
@@ -100,12 +110,12 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite4, o
             if (small_hitbox) {
                 player_sprite.setImage(assets.image`Player_Iframe`)
                 pause(50)
-                player_sprite.setImage(assets.image`Player`)
+                player_sprite.setImage(assets.image`Player_up`)
                 pause(50)
             } else {
                 hitbox.setImage(assets.image`Player_Iframe`)
                 pause(50)
-                hitbox.setImage(assets.image`Player`)
+                hitbox.setImage(assets.image`Player_up`)
                 pause(50)
             }
         }
@@ -146,6 +156,13 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.NPC, function (sprite3, otherSpr
     timer.after(2000, function () {
         talked = false
     })
+})
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (!(in_battle) && !(in_menu)) {
+        hitbox.setImage(assets.image`reimu_3`)
+        scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
+        scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
+    }
 })
 function spell_blue_sun () {
     projectile_sprite.setImage(assets.image`boss_bullet_4`)
@@ -225,6 +242,8 @@ function spell_wind () {
     offset += randint(-5, 5)
 }
 function start_game () {
+    in_menu = false
+    in_battle = false
     lifeBar.setFlag(SpriteFlag.Invisible, true)
     boss.setPosition(-16, -16)
     boss_can_move = false
@@ -232,20 +251,33 @@ function start_game () {
     started = false
     sprites.destroyAllSpritesOfKind(SpriteKind.Projectile)
     tiles.placeOnTile(hitbox, player_location)
-    hitbox.setImage(assets.image`Player`)
+    hitbox.setImage(assets.image`reimu_2`)
+    scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
+    scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
     scene.cameraFollowSprite(hitbox)
     controller.moveSprite(hitbox)
     tiles.setCurrentTilemap(tilemap`map1`)
-    enemy1 = sprites.create(assets.image`enemy1`, SpriteKind.Enemy_NPC)
-    enemy2 = sprites.create(assets.image`enemy2`, SpriteKind.Enemy_NPC)
-    enemy3 = sprites.create(assets.image`enemy3`, SpriteKind.Enemy_NPC)
+    enemy1 = sprites.create(assets.image`sakuya`, SpriteKind.Enemy_NPC)
+    enemy2 = sprites.create(assets.image`cirno`, SpriteKind.Enemy_NPC)
+    enemy3 = sprites.create(assets.image`remilia`, SpriteKind.Enemy_NPC)
     npc1 = sprites.create(assets.image`npc1`, SpriteKind.NPC)
+    scaling.scaleToPixels(enemy1, 24, ScaleDirection.Uniformly, ScaleAnchor.Middle)
+    scaling.scaleToPixels(enemy2, 24, ScaleDirection.Uniformly, ScaleAnchor.Middle)
+    scaling.scaleToPixels(enemy3, 24, ScaleDirection.Uniformly, ScaleAnchor.Middle)
     set_NPC_location(enemy1, tiles.getTileLocation(3, 3))
     set_NPC_location(enemy2, tiles.getTileLocation(12, 3))
     set_NPC_location(enemy3, tiles.getTileLocation(12, 8))
     set_NPC_location(npc1, tiles.getTileLocation(3, 8))
 }
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (!(in_battle) && !(in_menu)) {
+        hitbox.setImage(assets.image`reimu_4`)
+        scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
+        scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
+    }
+})
 function start_battle (enemy: Sprite) {
+    in_battle = true
     lifeBar.setFlag(SpriteFlag.Invisible, false)
     boss_life = 48
     player_location = hitbox.tilemapLocation()
@@ -268,6 +300,7 @@ function start_battle (enemy: Sprite) {
     tiles.placeOnTile(boss, tiles.getTileLocation(0, 0))
     scene.centerCameraAt(0, 0)
     tiles.setCurrentTilemap(tilemap`level2`)
+    hitbox.setImage(assets.image`reimu_2`)
     hitbox.setPosition(75, 100)
     sprites.destroyAllSpritesOfKind(SpriteKind.Enemy_NPC)
     sprites.destroyAllSpritesOfKind(SpriteKind.NPC)
@@ -299,29 +332,14 @@ function init () {
     talked = false
     boss_num = 0
     player_location = tiles.getTileLocation(0, 0)
-    projectile_spawner = sprites.create(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, SpriteKind.Projectile_spawner)
+    projectile_spawner = sprites.create(assets.image`invisible`, SpriteKind.Projectile_spawner)
     change_offset = true
     fragmentation = false
     sin_wave = false
     amplitude = 0
     frecuency = 0
+    in_menu = true
+    in_battle = false
 }
 function boss_movement () {
     boss_movement2 = [[
@@ -378,6 +396,13 @@ function framedMenu () {
         start_game()
     })
 }
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (!(in_battle) && !(in_menu)) {
+        hitbox.setImage(assets.image`reimu_1`)
+        scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
+        scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
+    }
+})
 function set_bullet_spin (a_offset: number, speed2: number) {
     bullet_spin = true
     angle_offset = a_offset
@@ -394,7 +419,9 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_NPC, function (sprite6, ot
 })
 controller.B.onEvent(ControllerButtonEvent.Released, function () {
     if (started) {
-        hitbox.setImage(assets.image`Player`)
+        hitbox.setImage(assets.image`reimu_2`)
+        scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
+        scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
         small_hitbox = false
         controller.moveSprite(hitbox)
         sprites.destroy(player_sprite)
@@ -507,8 +534,10 @@ let change_offset = false
 let projectile_spawner: Sprite = null
 let player_sprite: Sprite = null
 let small_hitbox = false
-let hitbox: Sprite = null
 let started = false
+let hitbox: Sprite = null
+let in_menu = false
+let in_battle = false
 let offset = 0
 let MAX = 0
 let boss: Sprite = null

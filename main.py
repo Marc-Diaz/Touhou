@@ -192,6 +192,16 @@ def on_on_overlap2(sprite3, otherSprite):
     
 sprites.on_overlap(SpriteKind.player, SpriteKind.NPC, on_on_overlap2)
 
+def spell_blue_sun():
+    projectile_sprite.set_image(assets.image("""
+        boss_bullet_4
+        """))
+    for index4 in range(9):
+        shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, 45 * index4 + 22.5)
+        shoot_bullet_from_sprite(boss, projectile_sprite.image, 100, 45 * index4)
+    projectile_sprite.set_image(assets.image("""
+        boss_bullet
+        """))
 def spell_star_vortex():
     global star_sprites, offset
     star_sprites = [assets.image("""
@@ -254,7 +264,7 @@ def spell_bullet_mirror():
     global warp_around, offset
     warp_around = True
     projectile_sprite.set_image(assets.image("""
-        ice_cube
+        ice
         """))
     for index323 in range(3):
         shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, offset + index323 * 30)
@@ -263,14 +273,14 @@ def spell_spores():
     global offset
     for index324 in range(9):
         projectile_sprite.set_image(assets.image("""
-            cross_bullet_2
+            cross_bullet_1
             """))
         shoot_bullet_from_sprite(boss,
             projectile_sprite.image,
             45,
             index324 * 45 + 22.5 + offset)
         projectile_sprite.set_image(assets.image("""
-            cross_bullet_1
+            cross_bullet_2
             """))
         shoot_bullet_from_sprite(boss, projectile_sprite.image, 30, index324 * 45 + offset)
     offset += 22.5
@@ -279,7 +289,7 @@ def spell_wind():
     projectile_sprite.set_image(assets.image("""
         boss_bullet
         """))
-    for index4 in range(4):
+    for index5 in range(4):
         shoot_bullet_from_sprite(projectile_spawner,
             projectile_sprite.image,
             randint(45, 60),
@@ -304,9 +314,8 @@ def start_game():
         map1
         """))
     enemy1 = sprites.create(assets.image("""
-            tutorial_enemy
-            """),
-        SpriteKind.Enemy_NPC)
+        enemy1
+        """), SpriteKind.Enemy_NPC)
     enemy2 = sprites.create(assets.image("""
         enemy2
         """), SpriteKind.Enemy_NPC)
@@ -333,7 +342,7 @@ def start_battle(enemy: Sprite):
             forest_1
             """))
         boss.set_image(assets.image("""
-            Sakuya
+            sakuya
             """))
     elif enemy == enemy2:
         boss_num = 2
@@ -341,7 +350,7 @@ def start_battle(enemy: Sprite):
             forest_2
             """))
         boss.set_image(assets.image("""
-            Cirno
+            cirno
             """))
     elif enemy == enemy3:
         boss_num = 3
@@ -478,6 +487,17 @@ def on_on_overlap3(sprite6, otherSprite4):
     start_battle(otherSprite4)
 sprites.on_overlap(SpriteKind.player, SpriteKind.Enemy_NPC, on_on_overlap3)
 
+def on_b_released():
+    global small_hitbox
+    if started:
+        hitbox.set_image(assets.image("""
+            Player
+            """))
+        small_hitbox = False
+        controller.move_sprite(hitbox)
+        sprites.destroy(player_sprite)
+controller.B.on_event(ControllerButtonEvent.RELEASED, on_b_released)
+
 def enemy_shoot_aiming_player(sprite5: Sprite, projectile_image2: Image, speed22: number, spread: number):
     shoot_bullet_from_sprite(sprite5,
         projectile_image2,
@@ -487,7 +507,7 @@ def spell_aim_trail():
     projectile_sprite.set_image(assets.image("""
         boss_bullet
         """))
-    for index5 in range(11):
+    for index6 in range(11):
         enemy_shoot_aiming_player(boss, projectile_sprite.image, randint(20, 75), 10)
     projectile_sprite.set_image(assets.image("""
         boss_bullet_3
@@ -498,24 +518,6 @@ def moveSpriteRandomFixedTime(sprite52: Sprite, yLowerBound2: number, outerBound
         randint(outerBound2, scene.screen_width() - outerBound2),
         randint(outerBound2, yLowerBound2),
         u)
-def spell_red_sun():
-    global index222
-    projectile_sprite.set_image(assets.image("""
-        boss_bullet_4
-        """))
-    while index222 <= MAX:
-        shoot_bullet_from_sprite(boss,
-            projectile_sprite.image,
-            60,
-            360 / MAX * index222 + offset)
-        shoot_bullet_from_sprite(boss,
-            projectile_sprite.image,
-            100,
-            360 / MAX * (index222 + 0.5) + offset)
-        index222 += 1
-    projectile_sprite.set_image(assets.image("""
-        boss_bullet
-        """))
 def moveSprite(sprite62: Sprite, x3: number, y3: number, w: number):
     global globalX, globalY, dx, dy, speed32
     globalX = x3
@@ -546,15 +548,15 @@ def spell_star_barrage():
             randint(0, scene.screen_height()))
         
         def on_after3():
-            for index6 in range(9):
+            for index62 in range(9):
                 shoot_bullet_from_sprite(projectile_spawner,
                     projectile_sprite.image,
                     60,
-                    45 * (index6 + 0.5))
+                    45 * (index62 + 0.5))
                 shoot_bullet_from_sprite(projectile_spawner,
                     projectile_sprite.image,
                     100,
-                    45 * index6)
+                    45 * index62)
             projectile_spawner.set_image(assets.image("""
                 invisible
                 """))
@@ -591,7 +593,6 @@ def on_on_overlap4(sprite22, otherSprite3):
 sprites.on_overlap(SpriteKind.enemy, SpriteKind.PlayerShot, on_on_overlap4)
 
 speed32 = 0
-index222 = 0
 speed3 = 0
 angle_offset = 0
 myMenu: miniMenu.MenuSprite = None
@@ -700,9 +701,7 @@ def on_update_interval3():
                 spell_spores()
         elif boss_num == 2:
             if boss_progress == 2:
-                spell_red_sun()
-        else:
-            pass
+                spell_blue_sun()
 game.on_update_interval(1000, on_update_interval3)
 
 def on_update_interval4():
@@ -713,7 +712,8 @@ def on_update_interval4():
             elif boss_progress == 3:
                 spell_wind()
         elif boss_num == 3:
-            pass
+            if boss_progress == 4:
+                spell_starry_night()
 game.on_update_interval(400, on_update_interval4)
 
 def on_update_interval5():
@@ -723,9 +723,6 @@ def on_update_interval5():
                 spell_star_barrage()
             elif boss_progress == 3:
                 spell_star_vortex()
-        elif boss_num == 1:
-            if boss_progress == 1:
-                pass
 game.on_update_interval(150, on_update_interval5)
 
 def on_update_interval6():
