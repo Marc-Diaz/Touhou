@@ -29,19 +29,14 @@ function spell_flower () {
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
         hitbox.setImage(assets.image`Player_up`)
-        scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
-        scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
     }
 })
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     if (started) {
         hitbox.setImage(assets.image`player_hitbox`)
-        scaling.scaleToPixels(hitbox, 8, ScaleDirection.Uniformly, ScaleAnchor.Middle)
         hitbox.z = 1
         small_hitbox = true
-        player_sprite = sprites.create(assets.image`reimu_2`, SpriteKind.sprite)
-        scaling.scaleToPixels(player_sprite, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
-        scaling.scaleToPixels(player_sprite, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
+        player_sprite = sprites.create(assets.image`Player_up`, SpriteKind.sprite)
         controller.moveSprite(hitbox, 50, 50)
     }
 })
@@ -160,8 +155,6 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.NPC, function (sprite3, otherSpr
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
         hitbox.setImage(assets.image`player_left`)
-        scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
-        scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
     }
 })
 function spell_blue_sun () {
@@ -251,7 +244,7 @@ function start_game () {
     started = false
     sprites.destroyAllSpritesOfKind(SpriteKind.Projectile)
     tiles.placeOnTile(hitbox, player_location)
-    hitbox.setImage(assets.image`reimu_2`)
+    hitbox.setImage(assets.image`Player_up`)
     scene.cameraFollowSprite(hitbox)
     controller.moveSprite(hitbox)
     tiles.setCurrentTilemap(tilemap`map1`)
@@ -266,9 +259,7 @@ function start_game () {
 }
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
-        hitbox.setImage(assets.image`Player_down`)
-        scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
-        scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
+        hitbox.setImage(assets.image`Player_right`)
     }
 })
 function start_battle (enemy: Sprite) {
@@ -392,9 +383,7 @@ function framedMenu () {
 }
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
-        hitbox.setImage(assets.image`Player_right`)
-        scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
-        scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
+        hitbox.setImage(assets.image`Player_down`)
     }
 })
 function set_bullet_spin (a_offset: number, speed2: number) {
@@ -414,8 +403,6 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_NPC, function (sprite6, ot
 controller.B.onEvent(ControllerButtonEvent.Released, function () {
     if (started) {
         hitbox.setImage(assets.image`Player_up`)
-        scaling.scaleToPixels(hitbox, 18, ScaleDirection.Horizontally, ScaleAnchor.Middle)
-        scaling.scaleToPixels(hitbox, 24, ScaleDirection.Vertically, ScaleAnchor.Middle)
         small_hitbox = false
         controller.moveSprite(hitbox)
         sprites.destroy(player_sprite)
