@@ -37,7 +37,7 @@ Hay 3 bosses cada uno con:
 ### Mapa
 | Explicación | Mapa |
 |--------------|:------------:|
-| El |![Mapa](mapa.png)|
+| Elshdfsafdkjsaljkfklsadjflsaklñfjksdljkdsflkldsfkjsdafñklsdsdf |![Mapa](mapa.png)|
 
 
 ---
