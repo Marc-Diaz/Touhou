@@ -52,6 +52,7 @@ Más allá de la aldea de las setas se encuentra el bosque de las hadas, un luga
 
 En el corazón del bosque de las hadas se encuentra el espejo Lunar, un lago completamente en calma que refleja el cielo estrellado y la Luna llena, el lugar perfecto para realizar el ritual y donde tendrás que derrotar a Remilia para poder traer el equilibrio a Gensokyo de una vez por todas.
 
---
+---
+
 ## SPEEDRUN
 
