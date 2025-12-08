@@ -417,10 +417,7 @@ def start_battle(enemy: Sprite):
     sprites.destroy_all_sprites_of_kind(SpriteKind.Enemy_NPC)
     sprites.destroy_all_sprites_of_kind(SpriteKind.NPC)
     preSetBossPosition(80, 30)
-# <-- CORRECCIÓN CLAVE
-# La función set_projectile_speed y el timer ya no son necesarios
-# ya que la velocidad se establece en el momento del disparo.
-# timer.after(300, on_after)
+
 def init():
     global iframe, small_hitbox, hitbox, boss_life, boss, lifebar_pic, lifeBar, offset, MAX, boss_can_move, warp_around, global_speed, angle2, bullet_spin, talked, boss_num, player_location, projectile_spawner, change_offset, fragmentation, sin_wave, amplitude, frecuency, in_menu, in_battle
     iframe = False
@@ -700,7 +697,7 @@ scene.set_background_image(assets.image("""
     menu_screen
     """))
 framedMenu()
-music.play(music.string_playable("A5 C6 E6 D6 C6 B5 A5 E6 A6 G6 F6 E6", 160),
+music.play(music.string_playable("A5 C6 E6 D6 C6 B5 A5 E6 A6 G6 F6 E6", 140),
     music.PlaybackMode.LOOPING_IN_BACKGROUND)
 music.set_volume(25)
 init()
