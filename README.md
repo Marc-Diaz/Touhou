@@ -35,8 +35,7 @@ Hay 3 bosses cada uno con:
 ---
 
 ### Mapa
-El mapa está subdividido en distintas áreas:
-//TODO
+![Mapa](mapa.png)
 
 ---
 
