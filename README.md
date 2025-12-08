@@ -37,7 +37,7 @@ Hay 3 bosses cada uno con:
 ### Mapa
 | Explicación | Mapa |
 |--------------|:------------:|
-| Elshdfsafdkjsaljkfklsadjflsaklñfjksdljkdsflkldsfkjsdafñklsdsdf |![Mapa](mapa.png)|
+| El mapa está subdividido en 3 áreas distintas: <br><br> - La aldea de las setas donde tendrás que enfrentar al primer boss y se encuentra un NPC pidiendo ayuda.  <br><br> - El bosque de las hadas donde se encuentra el boss intermedio. <br><br> - El lago *Espejo de Luna* donde se encuentra el boss final.|![Mapa](mapa.png)|
 
 
 ---
