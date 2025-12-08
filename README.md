@@ -48,7 +48,7 @@ Reimu Hakurei la sacerdotisa del templo, encargada de mantener el balance y el e
 
 Por el camino se encontrará dificultades, para llegar al espejo lunar, el lugar donde Remilia se encuentra, se habrán de pasar por dos zonas, la aldea de las setas, hogar de unas criaturas guardianas de una reliquia indispensable par hacer el efecto de ritual permanente, allí se encuentra Sakuya Izayoi la más leal de las sirvientas de Remilia, decidía a cumplir los sueños de su ama.
 
-Más allá de la aldea de las setas se encuentra el bosque de las hadas, un lugar fantástico y misterioso donde el hada de hielo Cirno intentara evitar que llegues al espejo Lunar, a pesar de no ser una secuaz de Remilia, Cirno hará todo lo que pueda que reviertas los cambios que tanto la favorecen.
+Más allá de la aldea de las setas se encuentra el bosque de las hadas, un lugar fantástico y misterioso donde el hada de hielo Cirno intentara evitar que llegues al espejo Lunar, a pesar de no ser una secuaz de Remilia, Cirno hará todo lo que pueda que no reviertas los cambios que tanto la favorecen.
 
 En el corazón del bosque de las hadas se encuentra el espejo Lunar, un lago completamente en calma que refleja el cielo estrellado y la Luna llena, el lugar perfecto para realizar el ritual y donde tendrás que derrotar a Remilia para poder traer el equilibrio a Gensokyo de una vez por todas.
 
