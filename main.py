@@ -189,11 +189,11 @@ def on_on_overlap2(sprite3, otherSprite):
     if otherSprite == npc1 and not (talked):
         game.show_long_text("¡Sacerdotisa, gracias a los cielos que has llegado!",
             DialogLayout.BOTTOM)
-        game.show_long_text("La noche eterna está haciendo que los hongos enfermen… nuestras cosechas se están pudriendo.",
+        game.show_long_text("La noche eterna está haciendo que los hongos enfermen",
             DialogLayout.BOTTOM)
         game.show_long_text("Una mujer de mirada helada tomó nuestra reliquia sagrada y huyó hacia el bosque.",
             DialogLayout.BOTTOM)
-        game.show_long_text("Por favor… si no la recuperas, nuestra aldea no sobrevivirá.",
+        game.show_long_text("Por favor... si no la refucpera, nuestra aldea no sobrevivirá.",
             DialogLayout.BOTTOM)
         talked = True
     
@@ -700,7 +700,9 @@ scene.set_background_image(assets.image("""
     menu_screen
     """))
 framedMenu()
-music.set_volume(20)
+music.play(music.string_playable("A5 C6 E6 D6 C6 B5 A5 E6 A6 G6 F6 E6", 160),
+    music.PlaybackMode.LOOPING_IN_BACKGROUND)
+music.set_volume(50)
 init()
 
 def on_on_update():
