@@ -2,9 +2,9 @@
 Es un juego estilo **danamaku** inspirado en Touhou, creado usando **MakeCode Arcade**.
 
 Este juego incluye:
- - Tres bosses cada uno con 4 fas
- - Patrones de ataque variados (spellcars),
- - Dialogos con NPC que te van explicando la historia del juego
+ - Tres bosses cada uno con 4 fases.
+ - Patrones de ataque variados (spellcars).
+ - Dialogos con NPC que te van explicando la historia del juego.
  - Un menú para seleccionar la dificultad del juego.
 
 ---
@@ -19,7 +19,7 @@ Este juego incluye:
 
 ### Personaje jugable
 - El jugador controla el movimiento del jugador usando la `cruceta`.
-- Si el personaje está fuera de una batalla, la cámara seguirá al jugador y mostrará animaciones
+- Si el personaje está fuera de una batalla, la cámara seguirá al jugador y mostrará animaciones.
 - Dentro de una batalla puedes pulsar `A` para disparar o `B` para reducir la velocidad y hacer la hitbox más pequeña (útil para esquivar patrones de alta densidad)
 
 ---
