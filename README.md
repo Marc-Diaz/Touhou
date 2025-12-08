@@ -18,7 +18,7 @@ Este juego incluye:
 --- 
 
 ### Personaje jugable
-- El jugador controla el movimiento del jugador usando la cruceta.
+- El jugador controla el movimiento del jugador usando la `cruceta`.
 - Si el personaje está fuera de una batalla, la cámara seguirá al jugador y mostrará animaciones
 - Dentro de una batalla puedes pulsar `A` para disparar o `B` para reducir la velocidad y hacer la hitbox más pequeña (útil para esquivar patrones de alta densidad)
 
