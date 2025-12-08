@@ -27,6 +27,20 @@ function spell_flower () {
     offset += 9
     projectile_sprite.setImage(assets.image`boss_bullet`)
 }
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (!(in_battle) && !(in_menu)) {
+        hitbox.setImage(assets.image`Player_up`)
+    }
+})
+controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (started) {
+        hitbox.setImage(assets.image`player_hitbox`)
+        hitbox.z = 1
+        small_hitbox = true
+        player_sprite = sprites.create(assets.image`Player_up`, SpriteKind.sprite)
+        controller.moveSprite(hitbox, 50, 50)
+    }
+})
 function moveSpriteRandom (sprite32: Sprite, yLowerBound: number, outerBound: number, v: number) {
     moveSprite(sprite32, randint(outerBound, scene.screenWidth() - outerBound), randint(outerBound, yLowerBound), v)
 }
@@ -52,11 +66,6 @@ function bullet_fragmentation () {
         projectile_spawner.setVelocity(p.vx, p.vy)
     }
 }
-controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (!(in_battle) && !(in_menu)) {
-        hitbox.setImage(assets.image`Player_down`)
-    }
-})
 function spell_fragmentation () {
     fragmentation = true
     projectile_sprite.setImage(assets.image`cross_bullet_2`)
@@ -74,6 +83,11 @@ function spell_fragmentation () {
         })
     })
 }
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (started) {
+        shoot_bullet_from_sprite(hitbox, hitbox.image, 200, -90)
+    }
+})
 function spell_star_corridor () {
     projectile_sprite.setImage(assets.image`star_bullet_2`)
     scatter = 10
@@ -129,20 +143,15 @@ function shoot_bullet_from_sprite (source_sprite: Sprite, projectile_image: Imag
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.NPC, function (sprite3, otherSprite) {
     if (otherSprite == npc1 && !(talked)) {
-        game.showLongText("Hola", DialogLayout.Bottom)
-        game.showLongText("Como estas", DialogLayout.Bottom)
-        game.showLongText("Adios", DialogLayout.Bottom)
-        game.showLongText("...", DialogLayout.Bottom)
+        game.showLongText("¡Sacerdotisa, gracias a los cielos que has llegado!", DialogLayout.Bottom)
+        game.showLongText("La noche eterna está haciendo que los hongos enfermen", DialogLayout.Bottom)
+        game.showLongText("Una mujer de mirada helada tomó nuestra reliquia sagrada y huyó hacia el bosque.", DialogLayout.Bottom)
+        game.showLongText("Por favor... si no la refucpera, nuestra aldea no sobrevivirá.", DialogLayout.Bottom)
         talked = true
     }
     timer.after(2000, function () {
         talked = false
     })
-})
-controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (!(in_battle) && !(in_menu)) {
-        hitbox.setImage(assets.image`Player_right`)
-    }
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
@@ -151,26 +160,12 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 function spell_blue_sun () {
     projectile_sprite.setImage(assets.image`boss_bullet_4`)
-    for (let index = 0; index <= 8; index++) {
-        shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, 45 * index + 22.5)
-        shoot_bullet_from_sprite(boss, projectile_sprite.image, 100, 45 * index)
+    for (let index4 = 0; index4 <= 8; index4++) {
+        shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, 45 * index4 + 22.5)
+        shoot_bullet_from_sprite(boss, projectile_sprite.image, 100, 45 * index4)
     }
     projectile_sprite.setImage(assets.image`boss_bullet`)
 }
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (started) {
-        shoot_bullet_from_sprite(hitbox, hitbox.image, 200, -90)
-    }
-})
-controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (started) {
-        hitbox.setImage(assets.image`player_hitbox`)
-        hitbox.z = 1
-        small_hitbox = true
-        player_sprite = sprites.create(assets.image`Player_up`, SpriteKind.sprite)
-        controller.moveSprite(hitbox, 50, 50)
-    }
-})
 function spell_star_vortex () {
     star_sprites = [
     assets.image`star_bullet_1`,
@@ -207,14 +202,6 @@ function spell_starry_night () {
         enemy_shoot_aiming_player(projectile_spawner, star_sprites._pickRandom(), 30, 1)
     }
 }
-function set_NPC_location (NPC2: Sprite, location: tiles.Location) {
-    tiles.placeOnTile(NPC2, location)
-    if (NPC2.kind() == SpriteKind.Enemy_NPC) {
-        NPC2.sayText("!")
-    } else if (NPC2.kind() == SpriteKind.NPC) {
-        NPC2.sayText(":)")
-    }
-}
 function spell_bullet_mirror () {
     warp_around = true
     projectile_sprite.setImage(assets.image`ice`)
@@ -241,14 +228,15 @@ function spell_wind () {
     offset += randint(-5, 5)
 }
 function start_game () {
+    tiles.setCurrentTilemap(tilemap`map1`)
     casa_1 = sprites.create(assets.image`miImagen`, SpriteKind.sprite_map)
     casa_2 = sprites.create(assets.image`miImagen`, SpriteKind.sprite_map)
     puerta = sprites.create(assets.image`miImagen0`, SpriteKind.sprite_map)
     santuario = sprites.create(assets.image`miImagen2`, SpriteKind.sprite_map)
-    casa_2.setPosition(19, 92)
-    casa_1.setPosition(39, 90)
-    santuario.setPosition(6, 95)
-    puerta.setPosition(24, 62)
+    set_Sprite_location(casa_2, tiles.getTileLocation(39, 89))
+    set_Sprite_location(casa_1, tiles.getTileLocation(19, 81))
+    set_Sprite_location(santuario, tiles.getTileLocation(7, 93))
+    set_Sprite_location(puerta, tiles.getTileLocation(26, 90))
     in_menu = false
     in_battle = false
     lifeBar.setFlag(SpriteFlag.Invisible, true)
@@ -257,25 +245,29 @@ function start_game () {
     ready = false
     started = false
     sprites.destroyAllSpritesOfKind(SpriteKind.Projectile)
-    tiles.placeOnTile(hitbox, player_location)
+    set_Sprite_location(hitbox, tiles.getTileLocation(player_location[0], player_location[1]))
     hitbox.setImage(assets.image`Player_up`)
     scene.cameraFollowSprite(hitbox)
     controller.moveSprite(hitbox)
-    tiles.setCurrentTilemap(tilemap`map1`)
     enemy1 = sprites.create(assets.image`sakuya`, SpriteKind.Enemy_NPC)
     enemy2 = sprites.create(assets.image`cirno`, SpriteKind.Enemy_NPC)
     enemy3 = sprites.create(assets.image`remilia`, SpriteKind.Enemy_NPC)
     npc1 = sprites.create(assets.image`npc1`, SpriteKind.NPC)
-    set_NPC_location(enemy1, tiles.getTileLocation(24, 71))
-    set_NPC_location(enemy2, tiles.getTileLocation(24, 40))
-    set_NPC_location(enemy3, tiles.getTileLocation(24, 1))
-    set_NPC_location(npc1, tiles.getTileLocation(3, 8))
+    set_Sprite_location(enemy1, tiles.getTileLocation(25, 73))
+    set_Sprite_location(enemy2, tiles.getTileLocation(25, 40))
+    set_Sprite_location(enemy3, tiles.getTileLocation(25, 5))
+    set_Sprite_location(npc1, tiles.getTileLocation(19, 83))
 }
+controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (!(in_battle) && !(in_menu)) {
+        hitbox.setImage(assets.image`Player_right`)
+    }
+})
 function start_battle (enemy: Sprite) {
     in_battle = true
     lifeBar.setFlag(SpriteFlag.Invisible, false)
     boss_life = 48
-    player_location = hitbox.tilemapLocation()
+    player_location = [Math.round(hitbox.x / 16 - 2), Math.round(hitbox.y / 16)]
     life_bar_progress = 0
     boss_progress = 0
     if (enemy == enemy1) {
@@ -325,7 +317,7 @@ function init () {
     bullet_spin = false
     talked = false
     boss_num = 0
-    player_location = tiles.getTileLocation(0, 0)
+    player_location = [7, 97]
     projectile_spawner = sprites.create(assets.image`invisible`, SpriteKind.Projectile_spawner)
     change_offset = true
     fragmentation = false
@@ -390,9 +382,9 @@ function framedMenu () {
         start_game()
     })
 }
-controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
-        hitbox.setImage(assets.image`Player_up`)
+        hitbox.setImage(assets.image`Player_down`)
     }
 })
 function set_bullet_spin (a_offset: number, speed2: number) {
@@ -408,6 +400,14 @@ function preSetBossPosition (x22: number, y2: number) {
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_NPC, function (sprite6, otherSprite4) {
     start_battle(otherSprite4)
+})
+controller.B.onEvent(ControllerButtonEvent.Released, function () {
+    if (started) {
+        hitbox.setImage(assets.image`Player_up`)
+        small_hitbox = false
+        controller.moveSprite(hitbox)
+        sprites.destroy(player_sprite)
+    }
 })
 function enemy_shoot_aiming_player (sprite5: Sprite, projectile_image2: Image, speed22: number, spread: number) {
     shoot_bullet_from_sprite(sprite5, projectile_image2, speed22, Math.atan2(hitbox.y - sprite5.y, hitbox.x - sprite5.x) * 57.3 + randint(0 - spread, spread))
@@ -433,6 +433,14 @@ function moveSprite (sprite62: Sprite, x3: number, y3: number, w: number) {
         sprite62.setVelocity(dx / speed32 * w, dy / speed32 * w)
     }
 }
+function set_Sprite_location (NPC2: Sprite, location: tiles.Location) {
+    tiles.placeOnTile(NPC2, location)
+    if (NPC2.kind() == SpriteKind.Enemy_NPC) {
+        NPC2.sayText("!")
+    } else if (NPC2.kind() == SpriteKind.NPC) {
+        NPC2.sayText(":)")
+    }
+}
 function phase_change () {
     sprites.destroyAllSpritesOfKind(SpriteKind.Projectile)
     boss_progress += 1
@@ -440,14 +448,6 @@ function phase_change () {
     bullet_spin = false
     sin_wave = false
 }
-controller.B.onEvent(ControllerButtonEvent.Released, function () {
-    if (started) {
-        hitbox.setImage(assets.image`Player_up`)
-        small_hitbox = false
-        controller.moveSprite(hitbox)
-        sprites.destroy(player_sprite)
-    }
-})
 function spell_star_barrage () {
     set_bullet_spin(0.05, 2)
     projectile_sprite.setImage(assets.image`star_bullet_2`)
@@ -455,9 +455,9 @@ function spell_star_barrage () {
         projectile_spawner.setImage(assets.image`danger_sprite`)
         projectile_spawner.setPosition(randint(0, scene.screenWidth()), randint(0, scene.screenHeight()))
         timer.after(500, function () {
-            for (let index6 = 0; index6 <= 8; index6++) {
-                shoot_bullet_from_sprite(projectile_spawner, projectile_sprite.image, 60, 45 * (index6 + 0.5))
-                shoot_bullet_from_sprite(projectile_spawner, projectile_sprite.image, 100, 45 * index6)
+            for (let index62 = 0; index62 <= 8; index62++) {
+                shoot_bullet_from_sprite(projectile_spawner, projectile_sprite.image, 60, 45 * (index62 + 0.5))
+                shoot_bullet_from_sprite(projectile_spawner, projectile_sprite.image, 100, 45 * index62)
             }
             projectile_spawner.setImage(assets.image`invisible`)
         })
@@ -504,7 +504,7 @@ let boss_life = 0
 let enemy3: Sprite = null
 let enemy2: Sprite = null
 let enemy1: Sprite = null
-let player_location: tiles.Location = null
+let player_location: number[] = []
 let ready = false
 let boss_can_move = false
 let lifeBar: Sprite = null
@@ -514,24 +514,24 @@ let casa_2: Sprite = null
 let casa_1: Sprite = null
 let warp_around = false
 let star_sprites: Image[] = []
-let started = false
 let talked = false
 let npc1: Sprite = null
 let projectile: Sprite = null
 let frecuency = 0
 let amplitude = 0
 let sin_wave = false
-let player_sprite: Sprite = null
-let small_hitbox = false
 let debug_mode = false
 let iframe = false
 let scatter = 0
 let fragmentation = false
+let change_offset = false
+let projectile_spawner: Sprite = null
+let player_sprite: Sprite = null
+let small_hitbox = false
+let started = false
 let hitbox: Sprite = null
 let in_menu = false
 let in_battle = false
-let change_offset = false
-let projectile_spawner: Sprite = null
 let offset = 0
 let MAX = 0
 let boss: Sprite = null

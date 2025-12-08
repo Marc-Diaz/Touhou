@@ -6,6 +6,7 @@ class SpriteKind:
     Enemy_NPC = SpriteKind.create()
     NPC = SpriteKind.create()
     Projectile_spawner = SpriteKind.create()
+    sprite_map = SpriteKind.create()
 def moveSpriteInTime(sprite2: Sprite, x: number, y: number, t: number):
     global globalX, globalY, dx, dy
     globalX = x
@@ -34,10 +35,8 @@ def spell_flower():
 def on_up_pressed():
     if not (in_battle) and not (in_menu):
         hitbox.set_image(assets.image("""
-            reimu_2
+            Player_up
             """))
-        scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
-        scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
 controller.up.on_event(ControllerButtonEvent.PRESSED, on_up_pressed)
 
 def on_b_pressed():
@@ -46,20 +45,11 @@ def on_b_pressed():
         hitbox.set_image(assets.image("""
             player_hitbox
             """))
-        scaling.scale_to_pixels(hitbox, 8, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
         hitbox.z = 1
         small_hitbox = True
         player_sprite = sprites.create(assets.image("""
-            reimu_2
+            Player_up
             """), SpriteKind.sprite)
-        scaling.scale_to_pixels(player_sprite,
-            18,
-            ScaleDirection.HORIZONTALLY,
-            ScaleAnchor.MIDDLE)
-        scaling.scale_to_pixels(player_sprite,
-            24,
-            ScaleDirection.VERTICALLY,
-            ScaleAnchor.MIDDLE)
         controller.move_sprite(hitbox, 50, 50)
 controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
 
@@ -197,10 +187,14 @@ def shoot_bullet_from_sprite(source_sprite: Sprite, projectile_image: Image, spe
 def on_on_overlap2(sprite3, otherSprite):
     global talked
     if otherSprite == npc1 and not (talked):
-        game.show_long_text("Hola", DialogLayout.BOTTOM)
-        game.show_long_text("Como estas", DialogLayout.BOTTOM)
-        game.show_long_text("Adios", DialogLayout.BOTTOM)
-        game.show_long_text("...", DialogLayout.BOTTOM)
+        game.show_long_text("¡Sacerdotisa, gracias a los cielos que has llegado!",
+            DialogLayout.BOTTOM)
+        game.show_long_text("La noche eterna está haciendo que los hongos enfermen… nuestras cosechas se están pudriendo.",
+            DialogLayout.BOTTOM)
+        game.show_long_text("Una mujer de mirada helada tomó nuestra reliquia sagrada y huyó hacia el bosque.",
+            DialogLayout.BOTTOM)
+        game.show_long_text("Por favor… si no la recuperas, nuestra aldea no sobrevivirá.",
+            DialogLayout.BOTTOM)
         talked = True
     
     def on_after2():
@@ -213,10 +207,8 @@ sprites.on_overlap(SpriteKind.player, SpriteKind.NPC, on_on_overlap2)
 def on_left_pressed():
     if not (in_battle) and not (in_menu):
         hitbox.set_image(assets.image("""
-            reimu_3
+            player_left
             """))
-        scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
-        scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
 controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
 
 def spell_blue_sun():
@@ -281,12 +273,6 @@ def spell_starry_night():
             star_bullet_2
             """))
         enemy_shoot_aiming_player(projectile_spawner, star_sprites._pick_random(), 30, 1)
-def set_NPC_location(NPC2: Sprite, location: tiles.Location):
-    tiles.place_on_tile(NPC2, location)
-    if NPC2.kind() == SpriteKind.Enemy_NPC:
-        NPC2.say_text("!")
-    elif NPC2.kind() == SpriteKind.NPC:
-        NPC2.say_text(":)")
 def spell_bullet_mirror():
     global warp_around, offset
     warp_around = True
@@ -324,7 +310,30 @@ def spell_wind():
         projectile_spawner.set_position(randint(0, scene.screen_width()), 5)
     offset += randint(-5, 5)
 def start_game():
-    global in_menu, in_battle, boss_can_move, ready, started, enemy1, enemy2, enemy3, npc1
+    global casa_1, casa_2, puerta, santuario, in_menu, in_battle, boss_can_move, ready, started, enemy1, enemy2, enemy3, npc1
+    tiles.set_current_tilemap(tilemap("""
+        map1
+        """))
+    casa_1 = sprites.create(assets.image("""
+            miImagen
+            """),
+        SpriteKind.sprite_map)
+    casa_2 = sprites.create(assets.image("""
+            miImagen
+            """),
+        SpriteKind.sprite_map)
+    puerta = sprites.create(assets.image("""
+            miImagen0
+            """),
+        SpriteKind.sprite_map)
+    santuario = sprites.create(assets.image("""
+            miImagen2
+            """),
+        SpriteKind.sprite_map)
+    set_Sprite_location(casa_2, tiles.get_tile_location(39, 89))
+    set_Sprite_location(casa_1, tiles.get_tile_location(19, 81))
+    set_Sprite_location(santuario, tiles.get_tile_location(7, 93))
+    set_Sprite_location(puerta, tiles.get_tile_location(26, 90))
     in_menu = False
     in_battle = False
     lifeBar.set_flag(SpriteFlag.INVISIBLE, True)
@@ -333,17 +342,13 @@ def start_game():
     ready = False
     started = False
     sprites.destroy_all_sprites_of_kind(SpriteKind.projectile)
-    tiles.place_on_tile(hitbox, player_location)
+    set_Sprite_location(hitbox,
+        tiles.get_tile_location(player_location[0], player_location[1]))
     hitbox.set_image(assets.image("""
-        reimu_2
+        Player_up
         """))
-    scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
-    scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
     scene.camera_follow_sprite(hitbox)
     controller.move_sprite(hitbox)
-    tiles.set_current_tilemap(tilemap("""
-        map1
-        """))
     enemy1 = sprites.create(assets.image("""
         sakuya
         """), SpriteKind.Enemy_NPC)
@@ -356,21 +361,16 @@ def start_game():
     npc1 = sprites.create(assets.image("""
         npc1
         """), SpriteKind.NPC)
-    scaling.scale_to_pixels(enemy1, 24, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
-    scaling.scale_to_pixels(enemy2, 24, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
-    scaling.scale_to_pixels(enemy3, 24, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
-    set_NPC_location(enemy1, tiles.get_tile_location(3, 3))
-    set_NPC_location(enemy2, tiles.get_tile_location(12, 3))
-    set_NPC_location(enemy3, tiles.get_tile_location(12, 8))
-    set_NPC_location(npc1, tiles.get_tile_location(3, 8))
+    set_Sprite_location(enemy1, tiles.get_tile_location(25, 73))
+    set_Sprite_location(enemy2, tiles.get_tile_location(25, 40))
+    set_Sprite_location(enemy3, tiles.get_tile_location(25, 5))
+    set_Sprite_location(npc1, tiles.get_tile_location(19, 83))
 
 def on_right_pressed():
     if not (in_battle) and not (in_menu):
         hitbox.set_image(assets.image("""
-            reimu_4
+            Player_right
             """))
-        scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
-        scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
 controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
 
 def start_battle(enemy: Sprite):
@@ -378,7 +378,7 @@ def start_battle(enemy: Sprite):
     in_battle = True
     lifeBar.set_flag(SpriteFlag.INVISIBLE, False)
     boss_life = 48
-    player_location = hitbox.tilemap_location()
+    player_location = [Math.round(hitbox.x / 16 - 2), Math.round(hitbox.y / 16)]
     life_bar_progress = 0
     boss_progress = 0
     if enemy == enemy1:
@@ -405,14 +405,13 @@ def start_battle(enemy: Sprite):
         boss.set_image(assets.image("""
             remilia
             """))
-    scaling.scale_to_pixels(boss, 24, ScaleDirection.UNIFORMLY, ScaleAnchor.MIDDLE)
     tiles.place_on_tile(boss, tiles.get_tile_location(0, 0))
     scene.center_camera_at(0, 0)
     tiles.set_current_tilemap(tilemap("""
         level2
         """))
     hitbox.set_image(assets.image("""
-        reimu_2
+        Player_up
         """))
     hitbox.set_position(75, 100)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Enemy_NPC)
@@ -448,7 +447,7 @@ def init():
     bullet_spin = False
     talked = False
     boss_num = 0
-    player_location = tiles.get_tile_location(0, 0)
+    player_location = [7, 97]
     projectile_spawner = sprites.create(assets.image("""
             invisible
             """),
@@ -510,10 +509,8 @@ def framedMenu():
 def on_down_pressed():
     if not (in_battle) and not (in_menu):
         hitbox.set_image(assets.image("""
-            reimu_1
+            Player_down
             """))
-        scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
-        scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
 controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
 
 def set_bullet_spin(a_offset: number, speed2: number):
@@ -536,10 +533,8 @@ def on_b_released():
     global small_hitbox
     if started:
         hitbox.set_image(assets.image("""
-            reimu_2
+            Player_up
             """))
-        scaling.scale_to_pixels(hitbox, 18, ScaleDirection.HORIZONTALLY, ScaleAnchor.MIDDLE)
-        scaling.scale_to_pixels(hitbox, 24, ScaleDirection.VERTICALLY, ScaleAnchor.MIDDLE)
         small_hitbox = False
         controller.move_sprite(hitbox)
         sprites.destroy(player_sprite)
@@ -574,6 +569,12 @@ def moveSprite(sprite62: Sprite, x3: number, y3: number, w: number):
     speed32 = Math.sqrt(dx * dx + dy * dy)
     if speed32 != 0:
         sprite62.set_velocity(dx / speed32 * w, dy / speed32 * w)
+def set_Sprite_location(NPC2: Sprite, location: tiles.Location):
+    tiles.place_on_tile(NPC2, location)
+    if NPC2.kind() == SpriteKind.Enemy_NPC:
+        NPC2.say_text("!")
+    elif NPC2.kind() == SpriteKind.NPC:
+        NPC2.say_text(":)")
 def phase_change():
     global boss_progress, warp_around, bullet_spin, sin_wave
     sprites.destroy_all_sprites_of_kind(SpriteKind.projectile)
@@ -655,10 +656,14 @@ boss_life = 0
 enemy3: Sprite = None
 enemy2: Sprite = None
 enemy1: Sprite = None
-player_location: tiles.Location = None
+player_location: List[number] = []
 ready = False
 boss_can_move = False
 lifeBar: Sprite = None
+santuario: Sprite = None
+puerta: Sprite = None
+casa_2: Sprite = None
+casa_1: Sprite = None
 warp_around = False
 star_sprites: List[Image] = []
 talked = False
