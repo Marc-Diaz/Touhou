@@ -5,6 +5,7 @@ namespace SpriteKind {
     export const Enemy_NPC = SpriteKind.create()
     export const NPC = SpriteKind.create()
     export const Projectile_spawner = SpriteKind.create()
+    export const sprite_map = SpriteKind.create()
 }
 function moveSpriteInTime (sprite2: Sprite, x: number, y: number, t: number) {
     globalX = x
@@ -240,6 +241,14 @@ function spell_wind () {
     offset += randint(-5, 5)
 }
 function start_game () {
+    casa_1 = sprites.create(assets.image`miImagen`, SpriteKind.sprite_map)
+    casa_2 = sprites.create(assets.image`miImagen`, SpriteKind.sprite_map)
+    puerta = sprites.create(assets.image`miImagen0`, SpriteKind.sprite_map)
+    santuario = sprites.create(assets.image`miImagen2`, SpriteKind.sprite_map)
+    casa_2.setPosition(19, 92)
+    casa_1.setPosition(39, 90)
+    santuario.setPosition(6, 95)
+    puerta.setPosition(24, 62)
     in_menu = false
     in_battle = false
     lifeBar.setFlag(SpriteFlag.Invisible, true)
@@ -257,9 +266,9 @@ function start_game () {
     enemy2 = sprites.create(assets.image`cirno`, SpriteKind.Enemy_NPC)
     enemy3 = sprites.create(assets.image`remilia`, SpriteKind.Enemy_NPC)
     npc1 = sprites.create(assets.image`npc1`, SpriteKind.NPC)
-    set_NPC_location(enemy1, tiles.getTileLocation(3, 3))
-    set_NPC_location(enemy2, tiles.getTileLocation(12, 3))
-    set_NPC_location(enemy3, tiles.getTileLocation(12, 8))
+    set_NPC_location(enemy1, tiles.getTileLocation(24, 71))
+    set_NPC_location(enemy2, tiles.getTileLocation(24, 40))
+    set_NPC_location(enemy3, tiles.getTileLocation(24, 1))
     set_NPC_location(npc1, tiles.getTileLocation(3, 8))
 }
 function start_battle (enemy: Sprite) {
@@ -499,6 +508,10 @@ let player_location: tiles.Location = null
 let ready = false
 let boss_can_move = false
 let lifeBar: Sprite = null
+let santuario: Sprite = null
+let puerta: Sprite = null
+let casa_2: Sprite = null
+let casa_1: Sprite = null
 let warp_around = false
 let star_sprites: Image[] = []
 let started = false
