@@ -702,7 +702,7 @@ scene.set_background_image(assets.image("""
 framedMenu()
 music.play(music.string_playable("A5 C6 E6 D6 C6 B5 A5 E6 A6 G6 F6 E6", 160),
     music.PlaybackMode.LOOPING_IN_BACKGROUND)
-music.set_volume(50)
+music.set_volume(25)
 init()
 
 def on_on_update():
