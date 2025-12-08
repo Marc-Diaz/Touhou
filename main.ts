@@ -7,13 +7,7 @@ namespace SpriteKind {
     export const Projectile_spawner = SpriteKind.create()
     export const sprite_map = SpriteKind.create()
 }
-function moveSpriteInTime (sprite2: Sprite, x: number, y: number, t: number) {
-    globalX = x
-    globalY = y
-    dx = x - sprite2.x
-    dy = y - sprite2.y
-    sprite2.setVelocity(dx / t, dy / t)
-}
+// Patron de balas
 function spell_flower () {
     projectile_sprite.setImage(assets.image`boss_bullet_2`)
     shoot_bullet_from_sprite(boss, projectile_sprite.image, 270 / MAX, 0 + offset)
@@ -27,11 +21,24 @@ function spell_flower () {
     offset += 9
     projectile_sprite.setImage(assets.image`boss_bullet`)
 }
+// Cambiar sprite al mover hacia arriba (si esta en el mapa)
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
         hitbox.setImage(assets.image`Player_up`)
     }
 })
+// Mueve al sprite
+function move_sprite (sprite62: Sprite, x3: number, y3: number, w: number) {
+    globalX = x3
+    globalY = y3
+    dx = x3 - sprite62.x
+    dy = y3 - sprite62.y
+    speed32 = Math.sqrt(dx * dx + dy * dy)
+    if (speed32 != 0) {
+        sprite62.setVelocity(dx / speed32 * w, dy / speed32 * w)
+    }
+}
+// Reducir la velocidad y cambiar la hitbox en una batalla
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     if (started) {
         hitbox.setImage(assets.image`player_hitbox`)
@@ -41,9 +48,11 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
         controller.moveSprite(hitbox, 50, 50)
     }
 })
+// Mueve al sprite de forma random dentro de los limites establecidos
 function moveSpriteRandom (sprite32: Sprite, yLowerBound: number, outerBound: number, v: number) {
-    moveSprite(sprite32, randint(outerBound, scene.screenWidth() - outerBound), randint(outerBound, yLowerBound), v)
+    move_sprite(sprite32, randint(outerBound, scene.screenWidth() - outerBound), randint(outerBound, yLowerBound), v)
 }
+// Patron de balas
 function spell_spore_infestation () {
     projectile_spawner.setPosition(0 + offset * 3, 5)
     projectile_sprite.setImage(assets.image`cross_bullet_2`)
@@ -61,11 +70,58 @@ function spell_spore_infestation () {
         offset += -5
     }
 }
+// Hace que el bullet spawner se superponga con los proyectiles
 function bullet_fragmentation () {
     for (let p of sprites.allOfKind(SpriteKind.Projectile)) {
         projectile_spawner.setVelocity(p.vx, p.vy)
     }
 }
+// Mover a un sprite hacia una posicion en un tiempo determinado
+function move_sprite_in_time (sprite2: Sprite, x: number, y: number, t: number) {
+    globalX = x
+    globalY = y
+    dx = x - sprite2.x
+    dy = y - sprite2.y
+    sprite2.setVelocity(dx / t, dy / t)
+}
+// Menu de inicio
+function menu () {
+    myMenu = miniMenu.createMenu(
+    miniMenu.createMenuItem("Debug"),
+    miniMenu.createMenuItem("Fácil"),
+    miniMenu.createMenuItem("Normal"),
+    miniMenu.createMenuItem("Difícil"),
+    miniMenu.createMenuItem("Imposible")
+    )
+    myMenu.setMenuStyleProperty(miniMenu.MenuStyleProperty.Width, 65)
+    myMenu.setMenuStyleProperty(miniMenu.MenuStyleProperty.Height, 100)
+    myMenu.setStyleProperty(miniMenu.StyleKind.DefaultAndSelected, miniMenu.StyleProperty.Border, miniMenu.createBorderBox(
+    4,
+    0,
+    0,
+    0
+    ))
+    myMenu.setStyleProperty(miniMenu.StyleKind.DefaultAndSelected, miniMenu.StyleProperty.Margin, miniMenu.createBorderBox(
+    0,
+    0,
+    0,
+    2
+    ))
+    myMenu.setStyleProperty(miniMenu.StyleKind.Default, miniMenu.StyleProperty.BorderColor, 11)
+    myMenu.setStyleProperty(miniMenu.StyleKind.Selected, miniMenu.StyleProperty.BorderColor, 4)
+    myMenu.setStyleProperty(miniMenu.StyleKind.DefaultAndSelected, miniMenu.StyleProperty.Background, 12)
+    myMenu.setStyleProperty(miniMenu.StyleKind.Default, miniMenu.StyleProperty.Foreground, 11)
+    myMenu.setStyleProperty(miniMenu.StyleKind.Selected, miniMenu.StyleProperty.Foreground, 4)
+    myMenu.top = 28
+    myMenu.right = 160
+    myMenu.onButtonPressed(controller.A, function (undefined, undefined2) {
+        myMenu.close()
+        info.setScore(0)
+        set_difficulty(1)
+        start_game()
+    })
+}
+// Patron de balas
 function spell_fragmentation () {
     fragmentation = true
     projectile_sprite.setImage(assets.image`cross_bullet_2`)
@@ -83,11 +139,13 @@ function spell_fragmentation () {
         })
     })
 }
+// Disparar balas si el jugador esta en una batalla
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (started) {
         shoot_bullet_from_sprite(hitbox, hitbox.image, 200, -90)
     }
 })
+// Patron de balas
 function spell_star_corridor () {
     projectile_sprite.setImage(assets.image`star_bullet_2`)
     scatter = 10
@@ -95,6 +153,8 @@ function spell_star_corridor () {
     shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, 100 + offset)
     offset += randint(-5, 5)
 }
+// Colision del jugador con balas enemigas
+// Se controlan los iframes del jugador y si se encuentra en modo debug
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite4, otherSprite2) {
     if (!(iframe) && !(debug_mode)) {
         info.changeLifeBy(-1)
@@ -118,6 +178,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Projectile, function (sprite4, o
         iframe = false
     }
 })
+// Patron de balas
 function spell_undergrowht () {
     sin_wave = true
     amplitude = 3
@@ -131,6 +192,7 @@ function spell_undergrowht () {
         }
     })
 }
+// Dispara una bala a partir de un sprtie base, si el sprite es el jugador dispara una bala distinta.
 function shoot_bullet_from_sprite (source_sprite: Sprite, projectile_image: Image, speed: number, angle: number) {
     projectile = sprites.createProjectileFromSprite(assets.image`star_bullet_3`, source_sprite, speed * Math.cos(angle / 57.3), speed * Math.sin(angle / 57.3))
     projectile.setFlag(SpriteFlag.AutoDestroy, true)
@@ -141,6 +203,7 @@ function shoot_bullet_from_sprite (source_sprite: Sprite, projectile_image: Imag
         projectile.setImage(projectile_image)
     }
 }
+// Colision del jugador con el NPC, aparecen dialogos al colisionar con el NPC
 sprites.onOverlap(SpriteKind.Player, SpriteKind.NPC, function (sprite3, otherSprite) {
     if (otherSprite == npc1 && !(talked)) {
         game.showLongText("¡Sacerdotisa, gracias a los cielos que has llegado!", DialogLayout.Bottom)
@@ -153,11 +216,13 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.NPC, function (sprite3, otherSpr
         talked = false
     })
 })
+// Cambiar sprite al mover hacia la izquierda (si esta en el mapa)
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
         hitbox.setImage(assets.image`player_left`)
     }
 })
+// Patron de balas
 function spell_blue_sun () {
     projectile_sprite.setImage(assets.image`boss_bullet_4`)
     for (let index4 = 0; index4 <= 8; index4++) {
@@ -166,6 +231,18 @@ function spell_blue_sun () {
     }
     projectile_sprite.setImage(assets.image`boss_bullet`)
 }
+// Mueve al boss a la posicion inicial.
+function preset_boss_position (x22: number, y2: number) {
+    started = false
+    ready = false
+    offset = 0
+    move_sprite_in_time(boss, x22, y2, 1)
+}
+// Mueve al sprite de forma aleatoria dentro de la pantalla en un tiempo fijo
+function move_sprite_random_fixed_time (sprite52: Sprite, yLowerBound2: number, outerBound2: number, u: number) {
+    move_sprite_in_time(sprite52, randint(outerBound2, scene.screenWidth() - outerBound2), randint(outerBound2, yLowerBound2), u)
+}
+// Patron de balas
 function spell_star_vortex () {
     star_sprites = [
     assets.image`star_bullet_1`,
@@ -181,6 +258,7 @@ function spell_star_vortex () {
     offset += 16
     projectile_sprite.setImage(assets.image`boss_bullet`)
 }
+// Patron de balas
 function spell_starry_night () {
     star_sprites = [
     assets.image`star_bullet_1`,
@@ -202,6 +280,7 @@ function spell_starry_night () {
         enemy_shoot_aiming_player(projectile_spawner, star_sprites._pickRandom(), 30, 1)
     }
 }
+// Patron de balas
 function spell_bullet_mirror () {
     warp_around = true
     projectile_sprite.setImage(assets.image`ice`)
@@ -210,6 +289,7 @@ function spell_bullet_mirror () {
     }
     offset += 48
 }
+// Patron de balas
 function spell_spores () {
     for (let index324 = 0; index324 <= 8; index324++) {
         projectile_sprite.setImage(assets.image`cross_bullet_1`)
@@ -219,6 +299,7 @@ function spell_spores () {
     }
     offset += 22.5
 }
+// Patron de balas
 function spell_wind () {
     projectile_sprite.setImage(assets.image`boss_bullet`)
     for (let index = 0; index < 4; index++) {
@@ -227,16 +308,17 @@ function spell_wind () {
     }
     offset += randint(-5, 5)
 }
+// Cambia las variables para iniciar el juego en el mapa.
 function start_game () {
     tiles.setCurrentTilemap(tilemap`map1`)
     casa_1 = sprites.create(assets.image`miImagen`, SpriteKind.sprite_map)
     casa_2 = sprites.create(assets.image`miImagen`, SpriteKind.sprite_map)
     puerta = sprites.create(assets.image`miImagen0`, SpriteKind.sprite_map)
     santuario = sprites.create(assets.image`miImagen2`, SpriteKind.sprite_map)
-    set_Sprite_location(casa_2, tiles.getTileLocation(39, 89))
-    set_Sprite_location(casa_1, tiles.getTileLocation(19, 81))
-    set_Sprite_location(santuario, tiles.getTileLocation(7, 93))
-    set_Sprite_location(puerta, tiles.getTileLocation(26, 90))
+    set_sprite_location(casa_2, tiles.getTileLocation(39, 89))
+    set_sprite_location(casa_1, tiles.getTileLocation(19, 81))
+    set_sprite_location(santuario, tiles.getTileLocation(7, 93))
+    set_sprite_location(puerta, tiles.getTileLocation(26, 90))
     in_menu = false
     in_battle = false
     lifeBar.setFlag(SpriteFlag.Invisible, true)
@@ -245,7 +327,7 @@ function start_game () {
     ready = false
     started = false
     sprites.destroyAllSpritesOfKind(SpriteKind.Projectile)
-    set_Sprite_location(hitbox, tiles.getTileLocation(player_location[0], player_location[1]))
+    set_sprite_location(hitbox, tiles.getTileLocation(player_location[0], player_location[1]))
     hitbox.setImage(assets.image`Player_up`)
     scene.cameraFollowSprite(hitbox)
     controller.moveSprite(hitbox)
@@ -253,16 +335,27 @@ function start_game () {
     enemy2 = sprites.create(assets.image`cirno`, SpriteKind.Enemy_NPC)
     enemy3 = sprites.create(assets.image`remilia`, SpriteKind.Enemy_NPC)
     npc1 = sprites.create(assets.image`npc1`, SpriteKind.NPC)
-    set_Sprite_location(enemy1, tiles.getTileLocation(25, 73))
-    set_Sprite_location(enemy2, tiles.getTileLocation(25, 40))
-    set_Sprite_location(enemy3, tiles.getTileLocation(25, 5))
-    set_Sprite_location(npc1, tiles.getTileLocation(19, 83))
+    set_sprite_location(enemy1, tiles.getTileLocation(25, 73))
+    set_sprite_location(enemy2, tiles.getTileLocation(25, 40))
+    set_sprite_location(enemy3, tiles.getTileLocation(25, 5))
+    set_sprite_location(npc1, tiles.getTileLocation(19, 83))
 }
+// Define la posicion de un sprite en el mapa
+function set_sprite_location (NPC2: Sprite, location: tiles.Location) {
+    tiles.placeOnTile(NPC2, location)
+    if (NPC2.kind() == SpriteKind.Enemy_NPC) {
+        NPC2.sayText("!")
+    } else if (NPC2.kind() == SpriteKind.NPC) {
+        NPC2.sayText(":)")
+    }
+}
+// Cambiar sprite al mover hacia la derecha (si esta en el mapa)
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
         hitbox.setImage(assets.image`Player_right`)
     }
 })
+// Cambia las variables para iniciar el juego en el mapa.
 function start_battle (enemy: Sprite) {
     in_battle = true
     lifeBar.setFlag(SpriteFlag.Invisible, false)
@@ -290,8 +383,9 @@ function start_battle (enemy: Sprite) {
     hitbox.setPosition(75, 100)
     sprites.destroyAllSpritesOfKind(SpriteKind.Enemy_NPC)
     sprites.destroyAllSpritesOfKind(SpriteKind.NPC)
-    preSetBossPosition(80, 30)
+    preset_boss_position(80, 30)
 }
+// Inicializa las variables del juego
 function init () {
     iframe = false
     small_hitbox = false
@@ -323,6 +417,7 @@ function init () {
     in_menu = true
     in_battle = false
 }
+// Información del movimiento de cada boss por fase
 function boss_movement () {
     boss_movement2 = [[
     false,
@@ -342,61 +437,23 @@ function boss_movement () {
     ]]
     boss_can_move = boss_movement2[boss_num - 1][boss_progress - 1]
 }
-function framedMenu () {
-    myMenu = miniMenu.createMenu(
-    miniMenu.createMenuItem("Debug"),
-    miniMenu.createMenuItem("Fácil"),
-    miniMenu.createMenuItem("Normal"),
-    miniMenu.createMenuItem("Difícil"),
-    miniMenu.createMenuItem("Imposible")
-    )
-    myMenu.setMenuStyleProperty(miniMenu.MenuStyleProperty.Width, 65)
-    myMenu.setMenuStyleProperty(miniMenu.MenuStyleProperty.Height, 100)
-    myMenu.setStyleProperty(miniMenu.StyleKind.DefaultAndSelected, miniMenu.StyleProperty.Border, miniMenu.createBorderBox(
-    4,
-    0,
-    0,
-    0
-    ))
-    myMenu.setStyleProperty(miniMenu.StyleKind.DefaultAndSelected, miniMenu.StyleProperty.Margin, miniMenu.createBorderBox(
-    0,
-    0,
-    0,
-    2
-    ))
-    myMenu.setStyleProperty(miniMenu.StyleKind.Default, miniMenu.StyleProperty.BorderColor, 11)
-    myMenu.setStyleProperty(miniMenu.StyleKind.Selected, miniMenu.StyleProperty.BorderColor, 4)
-    myMenu.setStyleProperty(miniMenu.StyleKind.DefaultAndSelected, miniMenu.StyleProperty.Background, 12)
-    myMenu.setStyleProperty(miniMenu.StyleKind.Default, miniMenu.StyleProperty.Foreground, 11)
-    myMenu.setStyleProperty(miniMenu.StyleKind.Selected, miniMenu.StyleProperty.Foreground, 4)
-    myMenu.top = 28
-    myMenu.right = 160
-    myMenu.onButtonPressed(controller.A, function (selection, selectedIndex) {
-        myMenu.close()
-        info.setScore(0)
-        set_difficulty(selectedIndex)
-        start_game()
-    })
-}
+// Cambiar sprite al mover hacia abajo (si esta en el mapa)
 controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     if (!(in_battle) && !(in_menu)) {
         hitbox.setImage(assets.image`Player_down`)
     }
 })
+// Las balas disparada emipiezan a girar en espiral
 function set_bullet_spin (a_offset: number, speed2: number) {
     bullet_spin = true
     angle_offset = a_offset
     speed3 = speed2
 }
-function preSetBossPosition (x22: number, y2: number) {
-    started = false
-    ready = false
-    offset = 0
-    moveSpriteInTime(boss, x22, y2, 1)
-}
+// Colision con el sprite del boss y el jugador en el mapa, inicia la batalla
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy_NPC, function (sprite6, otherSprite4) {
     start_battle(otherSprite4)
 })
+// Al dejar de pulsar B se revierten los cambios
 controller.B.onEvent(ControllerButtonEvent.Released, function () {
     if (started) {
         hitbox.setImage(assets.image`Player_up`)
@@ -405,9 +462,11 @@ controller.B.onEvent(ControllerButtonEvent.Released, function () {
         sprites.destroy(player_sprite)
     }
 })
+// Dispara balas dirigidas al sprite pasado por parametro
 function enemy_shoot_aiming_player (sprite5: Sprite, projectile_image2: Image, speed22: number, spread: number) {
     shoot_bullet_from_sprite(sprite5, projectile_image2, speed22, Math.atan2(hitbox.y - sprite5.y, hitbox.x - sprite5.x) * 57.3 + randint(0 - spread, spread))
 }
+// Patron de balas
 function spell_aim_trail () {
     projectile_sprite.setImage(assets.image`boss_bullet`)
     for (let index = 0; index < 11; index++) {
@@ -416,27 +475,7 @@ function spell_aim_trail () {
     projectile_sprite.setImage(assets.image`boss_bullet_3`)
     enemy_shoot_aiming_player(boss, projectile_sprite.image, 90, 5)
 }
-function moveSpriteRandomFixedTime (sprite52: Sprite, yLowerBound2: number, outerBound2: number, u: number) {
-    moveSpriteInTime(sprite52, randint(outerBound2, scene.screenWidth() - outerBound2), randint(outerBound2, yLowerBound2), u)
-}
-function moveSprite (sprite62: Sprite, x3: number, y3: number, w: number) {
-    globalX = x3
-    globalY = y3
-    dx = x3 - sprite62.x
-    dy = y3 - sprite62.y
-    speed32 = Math.sqrt(dx * dx + dy * dy)
-    if (speed32 != 0) {
-        sprite62.setVelocity(dx / speed32 * w, dy / speed32 * w)
-    }
-}
-function set_Sprite_location (NPC2: Sprite, location: tiles.Location) {
-    tiles.placeOnTile(NPC2, location)
-    if (NPC2.kind() == SpriteKind.Enemy_NPC) {
-        NPC2.sayText("!")
-    } else if (NPC2.kind() == SpriteKind.NPC) {
-        NPC2.sayText(":)")
-    }
-}
+// Cambia las variables al cambiar de fase
 function phase_change () {
     sprites.destroyAllSpritesOfKind(SpriteKind.Projectile)
     boss_progress += 1
@@ -444,6 +483,7 @@ function phase_change () {
     bullet_spin = false
     sin_wave = false
 }
+// Patron de balas
 function spell_star_barrage () {
     set_bullet_spin(0.05, 2)
     projectile_sprite.setImage(assets.image`star_bullet_2`)
@@ -459,6 +499,7 @@ function spell_star_barrage () {
         })
     })
 }
+// Cambia la vida del jugador, si es modo debug se invencible
 function set_difficulty (difficulty: number) {
     if (difficulty == 0) {
         debug_mode = true
@@ -469,6 +510,7 @@ function set_difficulty (difficulty: number) {
     projectile_sprite = sprites.create(assets.image`boss_bullet`, SpriteKind.Projectile)
     projectile_sprite.x = -10
 }
+// Colision con balas del jugador con boss, reduce la vida del boss
 sprites.onOverlap(SpriteKind.Enemy, SpriteKind.PlayerShot, function (sprite22, otherSprite3) {
     if (started) {
         info.changeScoreBy(20)
@@ -479,15 +521,13 @@ sprites.onOverlap(SpriteKind.Enemy, SpriteKind.PlayerShot, function (sprite22, o
         if (boss_life <= 0) {
             start_game()
         } else if (boss_life % 12 == 0) {
-            preSetBossPosition(80, 30)
+            preset_boss_position(80, 30)
         }
     }
     otherSprite3.destroy()
 })
-let speed32 = 0
 let speed3 = 0
 let angle_offset = 0
-let myMenu: miniMenu.MenuSprite = null
 let boss_movement2: boolean[][] = []
 let bullet_spin = false
 let angle2 = 0
@@ -501,7 +541,6 @@ let enemy3: Sprite = null
 let enemy2: Sprite = null
 let enemy1: Sprite = null
 let player_location: number[] = []
-let ready = false
 let boss_can_move = false
 let lifeBar: Sprite = null
 let santuario: Sprite = null
@@ -510,6 +549,7 @@ let casa_2: Sprite = null
 let casa_1: Sprite = null
 let warp_around = false
 let star_sprites: Image[] = []
+let ready = false
 let talked = false
 let npc1: Sprite = null
 let projectile: Sprite = null
@@ -520,11 +560,17 @@ let debug_mode = false
 let iframe = false
 let scatter = 0
 let fragmentation = false
+let myMenu: miniMenu.MenuSprite = null
 let change_offset = false
 let projectile_spawner: Sprite = null
 let player_sprite: Sprite = null
 let small_hitbox = false
 let started = false
+let speed32 = 0
+let dy = 0
+let dx = 0
+let globalY = 0
+let globalX = 0
 let hitbox: Sprite = null
 let in_menu = false
 let in_battle = false
@@ -532,19 +578,16 @@ let offset = 0
 let MAX = 0
 let boss: Sprite = null
 let projectile_sprite: Sprite = null
-let dy = 0
-let dx = 0
-let globalY = 0
-let globalX = 0
-let angle_offset2 = 0
-let bullet_spin2 = false
-let star_sprites2: number[] = []
 let spacing = 0
+let star_sprites2: number[] = []
+let bullet_spin2 = false
+let angle_offset2 = 0
 scene.setBackgroundImage(assets.image`menu_screen`)
-framedMenu()
+menu()
 music.play(music.stringPlayable("A5 C6 E6 D6 C6 B5 A5 E6 A6 G6 F6 E6", 140), music.PlaybackMode.LoopingInBackground)
 music.setVolume(25)
 init()
+// Gestiona la batalla, la trayectoria de las balas y la hitbox del jugador
 game.onUpdate(function () {
     if (Math.abs(boss.x - globalX) + Math.abs(boss.y - globalY) <= 2) {
         boss.setVelocity(0, 0)
@@ -580,6 +623,7 @@ game.onUpdate(function () {
         }
     }
 })
+// A partir de aqui son funciónes para medir la cadencia en la cual los bosses disparan los patrones
 game.onUpdateInterval(2500, function () {
     if (started && boss_can_move) {
         moveSpriteRandom(boss, 40, 8, 60)

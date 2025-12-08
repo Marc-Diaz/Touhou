@@ -7,13 +7,8 @@ class SpriteKind:
     NPC = SpriteKind.create()
     Projectile_spawner = SpriteKind.create()
     sprite_map = SpriteKind.create()
-def moveSpriteInTime(sprite2: Sprite, x: number, y: number, t: number):
-    global globalX, globalY, dx, dy
-    globalX = x
-    globalY = y
-    dx = x - sprite2.x
-    dy = y - sprite2.y
-    sprite2.set_velocity(dx / t, dy / t)
+
+# Patron de balas
 def spell_flower():
     global offset
     projectile_sprite.set_image(assets.image("""
@@ -32,6 +27,7 @@ def spell_flower():
         boss_bullet
         """))
 
+# Cambiar sprite al mover hacia arriba (si esta en el mapa)
 def on_up_pressed():
     if not (in_battle) and not (in_menu):
         hitbox.set_image(assets.image("""
@@ -39,6 +35,38 @@ def on_up_pressed():
             """))
 controller.up.on_event(ControllerButtonEvent.PRESSED, on_up_pressed)
 
+# Cambiar sprite al mover hacia abajo (si esta en el mapa)
+def on_down_pressed():
+    if not (in_battle) and not (in_menu):
+        hitbox.set_image(assets.image("""
+            Player_down
+            """))
+controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
+
+
+# Cambiar sprite al mover hacia la izquierda (si esta en el mapa)
+def on_left_pressed():
+    if not (in_battle) and not (in_menu):
+        hitbox.set_image(assets.image("""
+            player_left
+            """))
+controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
+
+# Cambiar sprite al mover hacia la derecha (si esta en el mapa)
+def on_right_pressed():
+    if not (in_battle) and not (in_menu):
+        hitbox.set_image(assets.image("""
+            Player_right
+            """))
+controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
+
+# Disparar balas si el jugador esta en una batalla
+def on_a_pressed():
+    if started:
+        shoot_bullet_from_sprite(hitbox, hitbox.image, 200, -90)
+controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
+
+# Reducir la velocidad y cambiar la hitbox en una batalla
 def on_b_pressed():
     global small_hitbox, player_sprite
     if started:
@@ -53,11 +81,26 @@ def on_b_pressed():
         controller.move_sprite(hitbox, 50, 50)
 controller.B.on_event(ControllerButtonEvent.PRESSED, on_b_pressed)
 
+# Al dejar de pulsar B se revierten los cambios
+def on_b_released():
+    global small_hitbox
+    if started:
+        hitbox.set_image(assets.image("""
+            Player_up
+            """))
+        small_hitbox = False
+        controller.move_sprite(hitbox)
+        sprites.destroy(player_sprite)
+controller.B.on_event(ControllerButtonEvent.RELEASED, on_b_released)
+
+# Mueve al sprite de forma random dentro de los limites establecidos
 def moveSpriteRandom(sprite32: Sprite, yLowerBound: number, outerBound: number, v: number):
     moveSprite(sprite32,
         randint(outerBound, scene.screen_width() - outerBound),
         randint(outerBound, yLowerBound),
         v)
+
+# Patron de balas
 def spell_spore_infestation():
     global change_offset, offset
     projectile_spawner.set_position(0 + offset * 3, 5)
@@ -77,9 +120,63 @@ def spell_spore_infestation():
         offset += 5
     else:
         offset += -5
+
+# Hace que el bullet spawner se superponga con los proyectiles
 def bullet_fragmentation():
     for p in sprites.all_of_kind(SpriteKind.projectile):
         projectile_spawner.set_velocity(p.vx, p.vy)
+
+# Mover a un sprite hacia una posicion en un tiempo determinado
+def move_sprite_in_time(sprite2: Sprite, x: number, y: number, t: number):
+    global globalX, globalY, dx, dy
+    globalX = x
+    globalY = y
+    dx = x - sprite2.x
+    dy = y - sprite2.y
+    sprite2.set_velocity(dx / t, dy / t)
+
+# Menu de inicio
+def menu():
+    global myMenu
+    myMenu = miniMenu.create_menu(miniMenu.create_menu_item("Debug"),
+        miniMenu.create_menu_item("Fácil"),
+        miniMenu.create_menu_item("Normal"),
+        miniMenu.create_menu_item("Difícil"),
+        miniMenu.create_menu_item("Imposible"))
+    myMenu.set_menu_style_property(miniMenu.MenuStyleProperty.WIDTH, 65)
+    myMenu.set_menu_style_property(miniMenu.MenuStyleProperty.HEIGHT, 100)
+    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT_AND_SELECTED,
+        miniMenu.StyleProperty.BORDER,
+        miniMenu.create_border_box(4, 0, 0, 0))
+    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT_AND_SELECTED,
+        miniMenu.StyleProperty.MARGIN,
+        miniMenu.create_border_box(0, 0, 0, 2))
+    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT,
+        miniMenu.StyleProperty.BORDER_COLOR,
+        11)
+    myMenu.set_style_property(miniMenu.StyleKind.SELECTED,
+        miniMenu.StyleProperty.BORDER_COLOR,
+        4)
+    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT_AND_SELECTED,
+        miniMenu.StyleProperty.BACKGROUND,
+        12)
+    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT,
+        miniMenu.StyleProperty.FOREGROUND,
+        11)
+    myMenu.set_style_property(miniMenu.StyleKind.SELECTED,
+        miniMenu.StyleProperty.FOREGROUND,
+        4)
+    myMenu.top = 28
+    myMenu.right = 160
+    
+    def on_button_pressed(undefined, undefined2):
+        myMenu.close()
+        info.set_score(0)
+        set_difficulty(1)
+        start_game()
+    myMenu.on_button_pressed(controller.A, on_button_pressed)
+    
+# Patron de balas
 def spell_fragmentation():
     global fragmentation
     fragmentation = True
@@ -103,13 +200,8 @@ def spell_fragmentation():
         timer.after(500, on_after)
         
     timer.throttle("action", 2000, on_throttle)
-    
 
-def on_a_pressed():
-    if started:
-        shoot_bullet_from_sprite(hitbox, hitbox.image, 200, -90)
-controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
-
+# Patron de balas
 def spell_star_corridor():
     global scatter, offset
     projectile_sprite.set_image(assets.image("""
@@ -120,6 +212,8 @@ def spell_star_corridor():
     shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, 100 + offset)
     offset += randint(-5, 5)
 
+# Colision del jugador con balas enemigas
+# Se controlan los iframes del jugador y si se encuentra en modo debug
 def on_on_overlap(sprite4, otherSprite2):
     global iframe
     if not (iframe) and not (debug_mode):
@@ -150,6 +244,7 @@ def on_on_overlap(sprite4, otherSprite2):
         iframe = False
 sprites.on_overlap(SpriteKind.player, SpriteKind.projectile, on_on_overlap)
 
+# Patron de balas
 def spell_undergrowht():
     global sin_wave, amplitude
     sin_wave = True
@@ -166,7 +261,8 @@ def spell_undergrowht():
             shoot_bullet_from_sprite(projectile_spawner, projectile_sprite.image, 45, 270)
             pause(150)
     timer.background(on_background)
-    
+
+# Dispara una bala a partir de un sprtie base, si el sprite es el jugador dispara una bala distinta.
 def shoot_bullet_from_sprite(source_sprite: Sprite, projectile_image: Image, speed: number, angle: number):
     global projectile
     projectile = sprites.create_projectile_from_sprite(assets.image("""
@@ -184,6 +280,7 @@ def shoot_bullet_from_sprite(source_sprite: Sprite, projectile_image: Image, spe
     else:
         projectile.set_image(projectile_image)
 
+# Colision del jugador con el NPC, aparecen dialogos al colisionar con el NPC
 def on_on_overlap2(sprite3, otherSprite):
     global talked
     if otherSprite == npc1 and not (talked):
@@ -204,13 +301,8 @@ def on_on_overlap2(sprite3, otherSprite):
     
 sprites.on_overlap(SpriteKind.player, SpriteKind.NPC, on_on_overlap2)
 
-def on_left_pressed():
-    if not (in_battle) and not (in_menu):
-        hitbox.set_image(assets.image("""
-            player_left
-            """))
-controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
 
+# Patron de balas
 def spell_blue_sun():
     projectile_sprite.set_image(assets.image("""
         boss_bullet_4
@@ -221,6 +313,16 @@ def spell_blue_sun():
     projectile_sprite.set_image(assets.image("""
         boss_bullet
         """))
+
+# Mueve al boss a la posicion inicial.
+def preset_boss_position(x22: number, y2: number):
+    global started, ready, offset
+    started = False
+    ready = False
+    offset = 0
+    move_sprite_in_time(boss, x22, y2, 1)
+
+# Patron de balas
 def spell_star_vortex():
     global star_sprites, offset
     star_sprites = [assets.image("""
@@ -246,6 +348,8 @@ def spell_star_vortex():
     projectile_sprite.set_image(assets.image("""
         boss_bullet
         """))
+
+# Patron de balas
 def spell_starry_night():
     global star_sprites
     star_sprites = [assets.image("""
@@ -273,6 +377,8 @@ def spell_starry_night():
             star_bullet_2
             """))
         enemy_shoot_aiming_player(projectile_spawner, star_sprites._pick_random(), 30, 1)
+
+# Patron de balas
 def spell_bullet_mirror():
     global warp_around, offset
     warp_around = True
@@ -282,6 +388,8 @@ def spell_bullet_mirror():
     for index323 in range(3):
         shoot_bullet_from_sprite(boss, projectile_sprite.image, 60, offset + index323 * 30)
     offset += 48
+
+# Patron de balas
 def spell_spores():
     global offset
     for index324 in range(9):
@@ -297,6 +405,8 @@ def spell_spores():
             """))
         shoot_bullet_from_sprite(boss, projectile_sprite.image, 30, index324 * 45 + offset)
     offset += 22.5
+
+# Patron de balas
 def spell_wind():
     global offset
     projectile_sprite.set_image(assets.image("""
@@ -309,6 +419,16 @@ def spell_wind():
             75 + offset)
         projectile_spawner.set_position(randint(0, scene.screen_width()), 5)
     offset += randint(-5, 5)
+
+# Define la posicion de un sprite en el mapa
+def set_sprite_location(NPC2: Sprite, location: tiles.Location):
+    tiles.place_on_tile(NPC2, location)
+    if NPC2.kind() == SpriteKind.Enemy_NPC:
+        NPC2.say_text("!")
+    elif NPC2.kind() == SpriteKind.NPC:
+        NPC2.say_text(":)")
+
+# Cambia las variables para iniciar el juego en el mapa.
 def start_game():
     global casa_1, casa_2, puerta, santuario, in_menu, in_battle, boss_can_move, ready, started, enemy1, enemy2, enemy3, npc1
     tiles.set_current_tilemap(tilemap("""
@@ -330,10 +450,10 @@ def start_game():
             miImagen2
             """),
         SpriteKind.sprite_map)
-    set_Sprite_location(casa_2, tiles.get_tile_location(39, 89))
-    set_Sprite_location(casa_1, tiles.get_tile_location(19, 81))
-    set_Sprite_location(santuario, tiles.get_tile_location(7, 93))
-    set_Sprite_location(puerta, tiles.get_tile_location(26, 90))
+    set_sprite_location(casa_2, tiles.get_tile_location(39, 89))
+    set_sprite_location(casa_1, tiles.get_tile_location(19, 81))
+    set_sprite_location(santuario, tiles.get_tile_location(7, 93))
+    set_sprite_location(puerta, tiles.get_tile_location(26, 90))
     in_menu = False
     in_battle = False
     lifeBar.set_flag(SpriteFlag.INVISIBLE, True)
@@ -342,7 +462,7 @@ def start_game():
     ready = False
     started = False
     sprites.destroy_all_sprites_of_kind(SpriteKind.projectile)
-    set_Sprite_location(hitbox,
+    set_sprite_location(hitbox,
         tiles.get_tile_location(player_location[0], player_location[1]))
     hitbox.set_image(assets.image("""
         Player_up
@@ -361,18 +481,13 @@ def start_game():
     npc1 = sprites.create(assets.image("""
         npc1
         """), SpriteKind.NPC)
-    set_Sprite_location(enemy1, tiles.get_tile_location(25, 73))
-    set_Sprite_location(enemy2, tiles.get_tile_location(25, 40))
-    set_Sprite_location(enemy3, tiles.get_tile_location(25, 5))
-    set_Sprite_location(npc1, tiles.get_tile_location(19, 83))
+    set_sprite_location(enemy1, tiles.get_tile_location(25, 73))
+    set_sprite_location(enemy2, tiles.get_tile_location(25, 40))
+    set_sprite_location(enemy3, tiles.get_tile_location(25, 5))
+    set_sprite_location(npc1, tiles.get_tile_location(19, 83))
 
-def on_right_pressed():
-    if not (in_battle) and not (in_menu):
-        hitbox.set_image(assets.image("""
-            Player_right
-            """))
-controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
 
+# Cambia las variables para iniciar el juego en el mapa.
 def start_battle(enemy: Sprite):
     global in_battle, boss_life, player_location, life_bar_progress, boss_progress, boss_num
     in_battle = True
@@ -416,8 +531,9 @@ def start_battle(enemy: Sprite):
     hitbox.set_position(75, 100)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Enemy_NPC)
     sprites.destroy_all_sprites_of_kind(SpriteKind.NPC)
-    preSetBossPosition(80, 30)
+    preset_boss_position(80, 30)
 
+# Inicializa las variables del juego
 def init():
     global iframe, small_hitbox, hitbox, boss_life, boss, lifebar_pic, lifeBar, offset, MAX, boss_can_move, warp_around, global_speed, angle2, bullet_spin, talked, boss_num, player_location, projectile_spawner, change_offset, fragmentation, sin_wave, amplitude, frecuency, in_menu, in_battle
     iframe = False
@@ -456,92 +572,35 @@ def init():
     frecuency = 0
     in_menu = True
     in_battle = False
+
+# Información del movimiento de cada boss por fase
 def boss_movement():
     global boss_movement2, boss_can_move
     boss_movement2 = [[False, False, False, False],
         [False, True, False, False],
         [True, False, False, False]]
     boss_can_move = boss_movement2[boss_num - 1][boss_progress - 1]
-def framedMenu():
-    global myMenu
-    myMenu = miniMenu.create_menu(miniMenu.create_menu_item("Debug"),
-        miniMenu.create_menu_item("Fácil"),
-        miniMenu.create_menu_item("Normal"),
-        miniMenu.create_menu_item("Difícil"),
-        miniMenu.create_menu_item("Imposible"))
-    myMenu.set_menu_style_property(miniMenu.MenuStyleProperty.WIDTH, 65)
-    myMenu.set_menu_style_property(miniMenu.MenuStyleProperty.HEIGHT, 100)
-    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT_AND_SELECTED,
-        miniMenu.StyleProperty.BORDER,
-        miniMenu.create_border_box(4, 0, 0, 0))
-    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT_AND_SELECTED,
-        miniMenu.StyleProperty.MARGIN,
-        miniMenu.create_border_box(0, 0, 0, 2))
-    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT,
-        miniMenu.StyleProperty.BORDER_COLOR,
-        11)
-    myMenu.set_style_property(miniMenu.StyleKind.SELECTED,
-        miniMenu.StyleProperty.BORDER_COLOR,
-        4)
-    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT_AND_SELECTED,
-        miniMenu.StyleProperty.BACKGROUND,
-        12)
-    myMenu.set_style_property(miniMenu.StyleKind.DEFAULT,
-        miniMenu.StyleProperty.FOREGROUND,
-        11)
-    myMenu.set_style_property(miniMenu.StyleKind.SELECTED,
-        miniMenu.StyleProperty.FOREGROUND,
-        4)
-    myMenu.top = 28
-    myMenu.right = 160
-    
-    def on_button_pressed(selection, selectedIndex):
-        myMenu.close()
-        info.set_score(0)
-        set_difficulty(selectedIndex)
-        start_game()
-    myMenu.on_button_pressed(controller.A, on_button_pressed)
-    
 
-def on_down_pressed():
-    if not (in_battle) and not (in_menu):
-        hitbox.set_image(assets.image("""
-            Player_down
-            """))
-controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
-
+# Las balas disparada emipiezan a girar en espiral
 def set_bullet_spin(a_offset: number, speed2: number):
     global bullet_spin, angle_offset, speed3
     bullet_spin = True
     angle_offset = a_offset
     speed3 = speed2
-def preSetBossPosition(x22: number, y2: number):
-    global started, ready, offset
-    started = False
-    ready = False
-    offset = 0
-    moveSpriteInTime(boss, x22, y2, 1)
 
+# Colision con el sprite del boss y el jugador en el mapa, inicia la batalla
 def on_on_overlap3(sprite6, otherSprite4):
     start_battle(otherSprite4)
 sprites.on_overlap(SpriteKind.player, SpriteKind.Enemy_NPC, on_on_overlap3)
 
-def on_b_released():
-    global small_hitbox
-    if started:
-        hitbox.set_image(assets.image("""
-            Player_up
-            """))
-        small_hitbox = False
-        controller.move_sprite(hitbox)
-        sprites.destroy(player_sprite)
-controller.B.on_event(ControllerButtonEvent.RELEASED, on_b_released)
-
+# Dispara balas dirigidas al sprite pasado por parametro
 def enemy_shoot_aiming_player(sprite5: Sprite, projectile_image2: Image, speed22: number, spread: number):
     shoot_bullet_from_sprite(sprite5,
         projectile_image2,
         speed22,
         Math.atan2(hitbox.y - sprite5.y, hitbox.x - sprite5.x) * 57.3 + randint(0 - spread, spread))
+
+# Patron de balas
 def spell_aim_trail():
     projectile_sprite.set_image(assets.image("""
         boss_bullet
@@ -552,11 +611,15 @@ def spell_aim_trail():
         boss_bullet_3
         """))
     enemy_shoot_aiming_player(boss, projectile_sprite.image, 90, 5)
+
+# Mueve al sprite de forma aleatoria dentro de la pantalla en un tiempo fijo
 def moveSpriteRandomFixedTime(sprite52: Sprite, yLowerBound2: number, outerBound2: number, u: number):
-    moveSpriteInTime(sprite52,
+    move_sprite_in_time(sprite52,
         randint(outerBound2, scene.screen_width() - outerBound2),
         randint(outerBound2, yLowerBound2),
         u)
+
+# Mueve al sprite
 def moveSprite(sprite62: Sprite, x3: number, y3: number, w: number):
     global globalX, globalY, dx, dy, speed32
     globalX = x3
@@ -566,12 +629,8 @@ def moveSprite(sprite62: Sprite, x3: number, y3: number, w: number):
     speed32 = Math.sqrt(dx * dx + dy * dy)
     if speed32 != 0:
         sprite62.set_velocity(dx / speed32 * w, dy / speed32 * w)
-def set_Sprite_location(NPC2: Sprite, location: tiles.Location):
-    tiles.place_on_tile(NPC2, location)
-    if NPC2.kind() == SpriteKind.Enemy_NPC:
-        NPC2.say_text("!")
-    elif NPC2.kind() == SpriteKind.NPC:
-        NPC2.say_text(":)")
+
+# Cambia las variables al cambiar de fase
 def phase_change():
     global boss_progress, warp_around, bullet_spin, sin_wave
     sprites.destroy_all_sprites_of_kind(SpriteKind.projectile)
@@ -579,6 +638,8 @@ def phase_change():
     warp_around = False
     bullet_spin = False
     sin_wave = False
+
+# Patron de balas
 def spell_star_barrage():
     set_bullet_spin(0.05, 2)
     projectile_sprite.set_image(assets.image("""
@@ -608,7 +669,8 @@ def spell_star_barrage():
         timer.after(500, on_after3)
         
     timer.throttle("action", 1000, on_throttle2)
-    
+
+# Cambia la vida del jugador, si es modo debug se invencible
 def set_difficulty(difficulty: number):
     global debug_mode, projectile_sprite
     if difficulty == 0:
@@ -622,6 +684,7 @@ def set_difficulty(difficulty: number):
         SpriteKind.projectile)
     projectile_sprite.x = -10
 
+# Colision con balas del jugador con boss, reduce la vida del boss
 def on_on_overlap4(sprite22, otherSprite3):
     global boss_life
     if started:
@@ -633,14 +696,13 @@ def on_on_overlap4(sprite22, otherSprite3):
         if boss_life <= 0:
             start_game()
         elif boss_life % 12 == 0:
-            preSetBossPosition(80, 30)
+            preset_boss_position(80, 30)
     otherSprite3.destroy()
 sprites.on_overlap(SpriteKind.enemy, SpriteKind.PlayerShot, on_on_overlap4)
 
 speed32 = 0
 speed3 = 0
 angle_offset = 0
-myMenu: miniMenu.MenuSprite = None
 boss_movement2: List[List[bool]] = []
 bullet_spin = False
 angle2 = 0
@@ -654,7 +716,6 @@ enemy3: Sprite = None
 enemy2: Sprite = None
 enemy1: Sprite = None
 player_location: List[number] = []
-ready = False
 boss_can_move = False
 lifeBar: Sprite = None
 santuario: Sprite = None
@@ -663,6 +724,7 @@ casa_2: Sprite = None
 casa_1: Sprite = None
 warp_around = False
 star_sprites: List[Image] = []
+ready = False
 talked = False
 npc1: Sprite = None
 projectile: Sprite = None
@@ -673,6 +735,11 @@ debug_mode = False
 iframe = False
 scatter = 0
 fragmentation = False
+myMenu: miniMenu.MenuSprite = None
+dy = 0
+dx = 0
+globalY = 0
+globalX = 0
 change_offset = False
 projectile_spawner: Sprite = None
 player_sprite: Sprite = None
@@ -685,23 +752,20 @@ offset = 0
 MAX = 0
 boss: Sprite = None
 projectile_sprite: Sprite = None
-dy = 0
-dx = 0
-globalY = 0
-globalX = 0
-spacing = 0
-star_sprites2: List[number] = []
-bullet_spin2 = False
 angle_offset2 = 0
+bullet_spin2 = False
+star_sprites2: List[number] = []
+spacing = 0
 scene.set_background_image(assets.image("""
     menu_screen
     """))
-framedMenu()
+menu()
 music.play(music.string_playable("A5 C6 E6 D6 C6 B5 A5 E6 A6 G6 F6 E6", 140),
     music.PlaybackMode.LOOPING_IN_BACKGROUND)
 music.set_volume(25)
 init()
 
+# Gestiona la batalla, la trayectoria de las balas y la hitbox del jugador
 def on_on_update():
     global ready, angle2, speed3
     if abs(boss.x - globalX) + abs(boss.y - globalY) <= 2:
@@ -730,6 +794,7 @@ def on_on_update():
                 q.x += Math.sin(angle2 + frecuency) * amplitude
 game.on_update(on_on_update)
 
+# A partir de aqui son funciónes para medir la cadencia en la cual los bosses disparan los patrones
 def on_update_interval():
     if started and boss_can_move:
         moveSpriteRandom(boss, 40, 8, 60)
