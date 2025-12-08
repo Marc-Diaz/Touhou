@@ -8,37 +8,37 @@ Este juego incluye:
  - Un menú para seleccionar la dificultad del juego.
 
 ---
-## Característicad del juego
+## Características del juego
 
-### Menu
-- Al iniciar el juego aparecera un menu *(muy bonito)* con las distintas opciones de dificultad.
-- La dificultad cambiara la vida inicial del personaje.
+### Menú
+- Al iniciar el juego aparece un menú *(muy bonito)* con las distintas opciones de dificultad.
+- La dificultad cambiará la vida inicial del personaje.
 - El modo Debug te hace inmortal.
 
 --- 
 
 ### Personaje jugable
-- El jugador controla el movimiento del jugador usando la cruzeta.
-- Si el personaje esta fuera de una batalla, la camara seguira al jugador y mostrara animaciones
-- Dentro de una batalla puedes pulsa `A` para disparar o `B` para reducir la velocidad y hacer la hitbox más pequeña (util para esquivar patrones de alta densida)
+- El jugador controla el movimiento del jugador usando la cruceta.
+- Si el personaje está fuera de una batalla, la cámara seguirá al jugador y mostrará animaciones
+- Dentro de una batalla puedes pulsar `A` para disparar o `B` para reducir la velocidad y hacer la hitbox más pequeña (útil para esquivar patrones de alta densidad)
 
 ---
 
 ### Sistema de Bosses
 Hay 3 bosses cada uno con:
- - Un sprite unico
- - Una posicion en el mapa, que al interactuar inicia un combate.
- - Cada combate cuenta con 4 fases, cada una con un **spellcard** unico.
+ - Un sprite único
+ - Una posición en el mapa, que al interactuar inicia un combate.
+ - Cada combate cuenta con 4 fases, cada una con un **spellcard** único.
  - Las distintas fases del combate se muestran con una barra de vida animada
  - Cada boss puede moverse por la pantalla *(dependiendo de la fase)*.
 
 ---
 
 ### Mapa
-El mapa esta subdividido en distintas areas:
+El mapa está subdividido en distintas áreas:
 //TODO
 
---
+---
 
 ## Historia
 
